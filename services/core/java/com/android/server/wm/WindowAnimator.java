@@ -90,6 +90,7 @@ public class WindowAnimator {
     boolean mKeyguardGoingAway;
     boolean mKeyguardGoingAwayToNotificationShade;
     boolean mKeyguardGoingAwayDisableWindowAnimations;
+    boolean mKeyguardGoingAwayShowingMedia;
 
     private final boolean mBlurUiEnabled;
 
@@ -433,7 +434,7 @@ public class WindowAnimator {
             if (!wallpaperInUnForceHiding && wallpaper != null
                     && !mKeyguardGoingAwayDisableWindowAnimations) {
                 Animation a = mPolicy.createForceHideWallpaperExitAnimation(
-                        mKeyguardGoingAwayToNotificationShade);
+                        mKeyguardGoingAwayToNotificationShade, mKeyguardGoingAwayShowingMedia);
                 if (a != null) {
                     WindowStateAnimator animator = wallpaper.mWinAnimator;
                     animator.setAnimation(a);
