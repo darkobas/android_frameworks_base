@@ -2861,6 +2861,12 @@
     <permission android:name="android.permission.RECORD_SCREEN"
         android:label="@string/permlab_recordScreen"
         android:description="@string/permdesc_recordScreen" />
+    <!-- Allows an application to use the system Torch service
+        @hide-->
+    <permission android:name="android.permission.ACCESS_TORCH_SERVICE"
+        android:label="@string/permlab_accessTorchService"
+        android:description="@string/permdesc_accessTorchService"
+        android:protectionLevel="signature" />
 
     <!-- The system process is explicitly the only one allowed to launch the
          confirmation UI for full backup/restore -->
