@@ -167,14 +167,6 @@ public class GpsNetInitiatedHandler {
         }
     };
 
-    /**
-     * The notification that is shown when a network-initiated notification
-     * (and verification) event is received.
-     * <p>
-     * This is lazily created, so use {@link #setNINotification()}.
-     */
-    private Notification mNiNotification;
-
     public GpsNetInitiatedHandler(Context context,
                                   INetInitiatedListener netInitiatedListener,
                                   boolean isSuplEsEnabled) {
@@ -363,34 +355,41 @@ public class GpsNetInitiatedHandler {
         String title = getNotifTitle(notif, mContext);
         String message = getNotifMessage(notif, mContext);
 
+        if (title == null) {
+            title = new String();
+        }
+        if (message == null) {
+            message = new String();
+        }
+
         if (DEBUG) Log.d(TAG, "setNiNotification, notifyId: " + notif.notificationId +
                 ", title: " + title +
                 ", message: " + message);
 
-        // Construct Notification
-        if (mNiNotification == null) {
-            mNiNotification = new Notification();
-            mNiNotification.icon = com.android.internal.R.drawable.stat_sys_gps_on; /* Change notification icon here */
-            mNiNotification.when = 0;
-        }
-
-        if (mPlaySounds) {
-            mNiNotification.defaults |= Notification.DEFAULT_SOUND;
-        } else {
-            mNiNotification.defaults &= ~Notification.DEFAULT_SOUND;
-        }
-
-        mNiNotification.flags = Notification.FLAG_ONGOING_EVENT | Notification.FLAG_AUTO_CANCEL;
-        mNiNotification.tickerText = getNotifTicker(notif, mContext);
-
-        // if not to popup dialog immediately, pending intent will open the dialog
         Intent intent = !mPopupImmediately ? getDlgIntent(notif) : new Intent();
         PendingIntent pi = PendingIntent.getBroadcast(mContext, 0, intent, 0);
-        mNiNotification.color = mContext.getResources().getColor(
-                com.android.internal.R.color.system_notification_accent_color);
-        mNiNotification.setLatestEventInfo(mContext, title, message, pi);
 
-        notificationManager.notifyAsUser(null, notif.notificationId, mNiNotification,
+        // Construct Notification
+        Notification niNotification = new Notification.Builder(mContext)
+                .setWhen(0)
+                /* Change notification icon here */
+                .setSmallIcon(com.android.internal.R.drawable.stat_sys_gps_on)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setStyle(new Notification.BigTextStyle().bigText(message))
+                .setContentIntent(pi)
+                .build();
+
+        if (mPlaySounds) {
+            niNotification.defaults |= Notification.DEFAULT_SOUND;
+        } else {
+            niNotification.defaults &= ~Notification.DEFAULT_SOUND;
+        }
+
+        niNotification.flags = Notification.FLAG_ONGOING_EVENT | Notification.FLAG_AUTO_CANCEL;
+        niNotification.tickerText = getNotifTicker(notif, mContext);
+
+        notificationManager.notifyAsUser(null, notif.notificationId, niNotification,
                 UserHandle.ALL);
     }
 
