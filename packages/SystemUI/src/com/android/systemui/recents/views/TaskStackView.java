@@ -491,7 +491,7 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
         tv.dismissTask();
     }
 
-    public void dismissAllTasks() {
+	public void dismissAllTasks() {
         post(new Runnable() {
             @Override
             public void run() {
