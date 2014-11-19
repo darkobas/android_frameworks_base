@@ -151,6 +151,14 @@ public class BatteryMeterView extends View implements DemoMode,
 
     BatteryTracker mTracker = new BatteryTracker();
 
+    private ContentObserver mObserver = new ContentObserver(new Handler()) {
+        public void onChange(boolean selfChange, Uri uri) {
+            mShowPercent = ENABLE_PERCENT && 0 != Settings.System.getInt(
+                getContext().getContentResolver(), Settings.System.STATUS_BAR_SHOW_BATTERY_PERCENT, 0);
+            postInvalidate();
+        }
+    };
+
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -397,8 +405,13 @@ public class BatteryMeterView extends View implements DemoMode,
         boolean pctOpaque = false;
         float pctX = 0, pctY = 0;
         String pctText = null;
+<<<<<<< HEAD
         if (!tracker.plugged && level > mCriticalLevel && mShowPercent
                 && !(tracker.level == 100 && !SHOW_100_PERCENT)) {
+=======
+        if (!tracker.plugged && level > mCriticalLevel && (mShowPercent
+                && !(tracker.level == 100 && !SHOW_100_PERCENT))) {
+>>>>>>> a1bab87... Fix battery % always showing at < 100%
             mTextPaint.setColor(getColorForLevel(level));
             mTextPaint.setTextSize(height *
                     (SINGLE_DIGIT_PERCENT ? 0.75f
