@@ -2996,39 +2996,6 @@ public final class PowerManagerService extends SystemService
             }
         }
 
-        @Override // Binder call
-        public void setKeyboardVisibility(boolean visible) {
-            synchronized (mLock) {
-                if (DEBUG_SPEW) {
-                    Slog.d(TAG, "setKeyboardVisibility: " + visible);
-                }
-                if (mKeyboardVisible != visible) {
-                    mKeyboardVisible = visible;
-                    if (!visible) {
-                        mKeyboardLight.turnOff();
-                        // If hiding keyboard, turn off leds
-                        setKeyboardLight(false, 1);
-                        setKeyboardLight(false, 2);
-                    }
-                }
-            }
-        }
-
-        @Override // Binder call
-        public void setKeyboardLight(boolean on, int key) {
-            if (key == 1) {
-                if (on)
-                    mCapsLight.setColor(0x00ffffff);
-                else
-                    mCapsLight.turnOff();
-            } else if (key == 2) {
-                if (on)
-                    mFnLight.setColor(0x00ffffff);
-                else
-                    mFnLight.turnOff();
-            }
-        }
-
         /**
          * @hide
          */
