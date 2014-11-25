@@ -41,7 +41,6 @@ import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IPowerManager;
 import android.os.Message;
 import android.os.RemoteException;
 import android.os.ServiceManager;
@@ -170,9 +169,11 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         if (mDialog != null) {
             mDialog.dismiss();
             mDialog = null;
+            mDialog = createDialog();
             // Show delayed, so that the dismiss of the previous dialog completes
             mHandler.sendEmptyMessage(MESSAGE_SHOW);
         } else {
+            mDialog = createDialog();
             handleShow();
         }
     }
@@ -191,7 +192,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
     private void handleShow() {
         awakenIfNecessary();
-        mDialog = createDialog();
         prepareDialog();
 
         // If we only have 1 item and it's a simple press action, just do this action.
@@ -359,35 +359,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         @Override
         public void onPress() {
             mWindowManagerFuncs.reboot();
-        }
-    }
-
-    private final class RebootAction extends SinglePressAction {
-        private RebootAction() {
-            super(com.android.internal.R.drawable.ic_lock_power_reboot,
-                    R.string.global_action_reboot);
-        }
-
-        @Override
-        public boolean showDuringKeyguard() {
-            return true;
-        }
-
-        @Override
-        public boolean showBeforeProvisioning() {
-            return true;
-        }
-
-        @Override
-        public void onPress() {
-            try {
-                IPowerManager pm = IPowerManager.Stub.asInterface(ServiceManager
-                        .getService(Context.POWER_SERVICE));
-                pm.reboot(true, null, false);
-            } catch (RemoteException e) {
-                Log.e(TAG, "PowerManager service died!", e);
-                return;
-            }
         }
     }
 
@@ -1059,7 +1030,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             if (!mHasTelephony) return;
             final boolean inAirplaneMode = serviceState.getState() == ServiceState.STATE_POWER_OFF;
             mAirplaneState = inAirplaneMode ? ToggleAction.State.On : ToggleAction.State.Off;
-            mAirplaneModeOn.updateState(mAirplaneState);
+            if (mAirplaneModeOn != null) {
+                mHandler.sendEmptyMessage(MESSAGE_REFRESH_AIRPLANEMODE);
+            }
             mAdapter.notifyDataSetChanged();
         }
     };
@@ -1083,6 +1056,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private static final int MESSAGE_DISMISS = 0;
     private static final int MESSAGE_REFRESH = 1;
     private static final int MESSAGE_SHOW = 2;
+    private static final int MESSAGE_REFRESH_AIRPLANEMODE = 3;
     private static final int DIALOG_DISMISS_DELAY = 300; // ms
 
     private Handler mHandler = new Handler() {
@@ -1101,6 +1075,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             case MESSAGE_SHOW:
                 handleShow();
                 break;
+            case MESSAGE_REFRESH_AIRPLANEMODE:
+	        mAirplaneModeOn.updateState(mAirplaneState);
+	        mAdapter.notifyDataSetChanged();
+	        break;
             }
         }
     };

@@ -195,7 +195,6 @@ public final class ShutdownThread extends Thread {
 
         if (confirm) {
             final CloseDialogReceiver closer = new CloseDialogReceiver(context);
-            final boolean advancedReboot = isAdvancedRebootPossible(context);
 
             if (sConfirmDialog != null) {
                 sConfirmDialog.dismiss();
@@ -281,6 +280,8 @@ public final class ShutdownThread extends Thread {
         } catch (RemoteException e) {
             Log.e(TAG, "failure trying to perform soft reboot", e);
         }
+    }
+
     private static int getAdvancedReboot(Context context) {
         return Settings.Secure.getInt(context.getContentResolver(),
                 Settings.Secure.ADVANCED_REBOOT, 0);

@@ -805,6 +805,7 @@
   <java-symbol type="string" name="reboot_safemode_confirm" />
   <java-symbol type="string" name="reboot_safemode_title" />
   <java-symbol type="string" name="reboot_title" />
+  <java-symbol type="string" name="reboot_system" />
   <java-symbol type="string" name="reboot_progress" />
   <java-symbol type="string" name="relationTypeAssistant" />
   <java-symbol type="string" name="relationTypeBrother" />
@@ -1120,6 +1121,7 @@
 
   <java-symbol type="drawable" name="default_wallpaper" />
   <java-symbol type="drawable" name="indicator_input_error" />
+  <java-symbol type="drawable" name="ic_lock_reboot" />
   <java-symbol type="drawable" name="popup_bottom_dark" />
   <java-symbol type="drawable" name="popup_bottom_bright" />
   <java-symbol type="drawable" name="popup_bottom_medium" />
