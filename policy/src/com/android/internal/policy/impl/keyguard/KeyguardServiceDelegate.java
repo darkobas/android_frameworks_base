@@ -133,7 +133,6 @@ public class KeyguardServiceDelegate {
             }
             if (mKeyguardState.bootCompleted) {
                 mKeyguardService.onBootCompleted();
-                sendStateChangeBroadcast(true);
             }
         }
 
@@ -141,7 +140,6 @@ public class KeyguardServiceDelegate {
         public void onServiceDisconnected(ComponentName name) {
             if (DEBUG) Log.v(TAG, "*** Keyguard disconnected (boo!)");
             mKeyguardService = null;
-            sendStateChangeBroadcast(true);
         }
 
     };
@@ -337,7 +335,6 @@ public class KeyguardServiceDelegate {
             mKeyguardService.onBootCompleted();
         }
         mKeyguardState.bootCompleted = true;
-        sendStateChangeBroadcast(true);
     }
 
     public void onActivityDrawn() {
