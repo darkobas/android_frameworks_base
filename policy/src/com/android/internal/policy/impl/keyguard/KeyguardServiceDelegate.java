@@ -141,6 +141,7 @@ public class KeyguardServiceDelegate {
         public void onServiceDisconnected(ComponentName name) {
             if (DEBUG) Log.v(TAG, "*** Keyguard disconnected (boo!)");
             mKeyguardService = null;
+            sendStateChangeBroadcast(true);
         }
 
     };
