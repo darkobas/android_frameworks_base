@@ -713,12 +713,12 @@ public class AudioManager {
                         || rotation == Surface.ROTATION_180)
                         && config.getLayoutDirection() == View.LAYOUT_DIRECTION_LTR) {
                     direction = keyCode == KeyEvent.KEYCODE_VOLUME_UP
-                            ? ADJUST_LOWER
-                            : ADJUST_RAISE;
-                } else {
-                    direction = keyCode == KeyEvent.KEYCODE_VOLUME_UP
                             ? ADJUST_RAISE
                             : ADJUST_LOWER;
+                } else {
+                    direction = keyCode == KeyEvent.KEYCODE_VOLUME_UP
+                            ? ADJUST_LOWER
+                            : ADJUST_RAISE;
                 }
                 int flags = FLAG_SHOW_UI | FLAG_VIBRATE;
 
