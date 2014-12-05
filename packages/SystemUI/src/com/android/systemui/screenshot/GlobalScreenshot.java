@@ -261,15 +261,6 @@ class SaveImageInBackgroundTask extends AsyncTask<SaveImageInBackgroundData, Voi
                     PendingIntent.getBroadcast(context, 0, deleteIntent,
                     PendingIntent.FLAG_CANCEL_CURRENT));
 
-            Intent deleteIntent = new Intent();
-            deleteIntent.setClass(context, DeleteScreenshot.class);
-            deleteIntent.putExtra(DeleteScreenshot.SCREENSHOT_URI, uri.toString());
-
-            mNotificationBuilder.addAction(R.drawable.ic_menu_delete,
-                     r.getString(R.string.screenshot_delete_action),
-                     PendingIntent.getBroadcast(context, 0, deleteIntent,
-                             PendingIntent.FLAG_CANCEL_CURRENT));
-
             OutputStream out = resolver.openOutputStream(uri);
             image.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
