@@ -25,4 +25,9 @@
     <string name="delete">Delete</string>
     <string name="screenshot_delete_confirmation">Screenshot deleted.</string>
 
+    <!-- stop notification -->
+    <string name="stop_notification_dialog_positive">Yes</string>
+    <string name="stop_notification_dialog_negative">No</string>
+    <string name="stop_notification_dialog_title">Disable notifications</string>
+    <string name="stop_notification_dialog_message">Are you sure you want to never show notifications from this application ?</string>
 </resources>
