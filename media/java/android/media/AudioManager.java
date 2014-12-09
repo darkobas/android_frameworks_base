@@ -45,8 +45,6 @@ import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Surface;
-import android.view.WindowManager;
 
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -70,8 +68,6 @@ public class AudioManager {
     private static String TAG = "AudioManager";
     AudioPortEventHandler mAudioPortEventHandler;
     private static ArrayList<MediaPlayerInfo> mMediaPlayers;
-    private final WindowManager mWindowManager;
-
     /**
      * Broadcast intent, a hint for applications that audio is about to become
      * 'noisy' due to a change in audio outputs. For example, this intent may
@@ -623,9 +619,8 @@ public class AudioManager {
         mAudioPortEventHandler = new AudioPortEventHandler(this);
         mUseFixedVolume = mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_useFixedVolume);
-
         mMediaPlayers = new ArrayList<MediaPlayerInfo>(1);
-        mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+
     }
 
     private static IAudioService getService()
@@ -704,24 +699,21 @@ public class AudioManager {
                  * Adjust the volume in on key down since it is more
                  * responsive to the user.
                  */
-                int direction;
-                int rotation = mWindowManager.getDefaultDisplay().getRotation();
-                if (rotation == Surface.ROTATION_90
-                        || rotation == Surface.ROTATION_180) {
-                    direction = keyCode == KeyEvent.KEYCODE_VOLUME_UP
-                            ? ADJUST_LOWER
-                            : ADJUST_RAISE;
-                } else {
-                    direction = keyCode == KeyEvent.KEYCODE_VOLUME_UP
-                            ? ADJUST_RAISE
-                            : ADJUST_LOWER;
-                }
                 int flags = FLAG_SHOW_UI | FLAG_VIBRATE;
 
                 if (mUseMasterVolume) {
-                    adjustMasterVolume(direction, flags);
+                    adjustMasterVolume(
+                            keyCode == KeyEvent.KEYCODE_VOLUME_UP
+                                    ? ADJUST_RAISE
+                                    : ADJUST_LOWER,
+                            flags);
                 } else {
-                    adjustSuggestedStreamVolume(direction, stream, flags);
+                    adjustSuggestedStreamVolume(
+                            keyCode == KeyEvent.KEYCODE_VOLUME_UP
+                                    ? ADJUST_RAISE
+                                    : ADJUST_LOWER,
+                            stream,
+                            flags);
                 }
                 break;
             case KeyEvent.KEYCODE_VOLUME_MUTE:
