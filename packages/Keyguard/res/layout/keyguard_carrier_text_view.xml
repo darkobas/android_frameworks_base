@@ -42,7 +42,7 @@
         android:singleLine="true"
         android:textDirection = "locale"
         android:textStyle="bold"
-        android:textColor="?android:attr/textColorSecondary"
+        android:textColor="?android:attr/textColorPrimary"
         android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
         android:visibility="gone" />
 
@@ -58,7 +58,7 @@
         android:singleLine="true"
         android:textDirection = "locale"
         android:textStyle="bold"
-        android:textColor="?android:attr/textColorSecondary"
+        android:textColor="?android:attr/textColorPrimary"
         android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
         android:visibility="gone" />
 
@@ -81,7 +81,7 @@
         android:singleLine="true"
         android:textDirection = "locale"
         android:textStyle="bold"
-        android:textColor="?android:attr/textColorSecondary"
+        android:textColor="?android:attr/textColorPrimary"
         android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
         android:visibility="gone" />
 
@@ -104,7 +104,7 @@
         android:singleLine="true"
         android:textDirection = "locale"
         android:textStyle="bold"
-        android:textColor="?android:attr/textColorSecondary"
+        android:textColor="?android:attr/textColorPrimary"
         android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
         android:visibility="gone" />
 </merge>
