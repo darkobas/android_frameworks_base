@@ -3119,7 +3119,7 @@ public final class Settings {
          * Volume music controls
          * @hide
          */
-        public static final String VOLUME_MUSIC_CONTROLS = "volume_music_controls";
+        public static final String VOLBTN_MUSIC_CONTROLS = "volbtn_music_controls";
 
         /**
           * Volume keys control cursor in text fields (default is 0)

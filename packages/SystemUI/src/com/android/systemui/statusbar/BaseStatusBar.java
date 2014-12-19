@@ -816,13 +816,10 @@ public abstract class BaseStatusBar extends SystemUI implements
         final View settingsButton = guts.findViewById(R.id.notification_inspect_item);
         final View appSettingsButton
                 = guts.findViewById(R.id.notification_inspect_app_provided_settings);
-<<<<<<< HEAD
         final View stopNotificationsButton
                 = guts.findViewById(R.id.notification_stop_notifications);
-=======
         final View headsUpButton
                 = guts.findViewById(R.id.notification_inspect_heads_up);
->>>>>>> d8a4637... Frameworks: Slim heads up customizations for LP (1/2)
         if (appUid >= 0) {
             final int appUidF = appUid;
             settingsButton.setOnClickListener(new View.OnClickListener() {
@@ -909,7 +906,6 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     }
 
-<<<<<<< HEAD
     private void showStopNotificationDialog(final String pkg, final StatusBarNotification sbn,
                                             final int uid) {
         // Collapse statusbar
@@ -936,7 +932,8 @@ public abstract class BaseStatusBar extends SystemUI implements
         AlertDialog dialog = builder.create();
         dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
         dialog.show();
-=======
+   }
+
     private void setHeadsUpButtonContentDescription(View v, boolean enabled) {
         if (v == null) return;
         if (enabled) {
@@ -958,7 +955,6 @@ public abstract class BaseStatusBar extends SystemUI implements
         } catch (PackageManager.NameNotFoundException e) {
             return false;
         }
->>>>>>> d8a4637... Frameworks: Slim heads up customizations for LP (1/2)
     }
 
     protected SwipeHelper.LongPressListener getNotificationLongClicker() {
@@ -2189,27 +2185,17 @@ public abstract class BaseStatusBar extends SystemUI implements
                 || notification.vibrate != null;
         boolean isHighPriority = sbn.getScore() >= INTERRUPTION_THRESHOLD;
         boolean isFullscreen = notification.fullScreenIntent != null;
-<<<<<<< HEAD
-        boolean hasTicker = mHeadsUpTicker && !TextUtils.isEmpty(notification.tickerText);
-        boolean isAllowed = notification.extras.getInt(Notification.EXTRA_AS_HEADS_UP,
-                Notification.HEADS_UP_ALLOWED) != Notification.HEADS_UP_NEVER;
-=======
         int asHeadsUp = notification.extras.getInt(Notification.EXTRA_AS_HEADS_UP,
                 Notification.HEADS_UP_ALLOWED);
         boolean isAllowed = asHeadsUp != Notification.HEADS_UP_NEVER;
->>>>>>> d8a4637... Frameworks: Slim heads up customizations for LP (1/2)
         boolean accessibilityForcesLaunch = isFullscreen
                 && mAccessibilityManager.isTouchExplorationEnabled();
         final KeyguardTouchDelegate keyguard = KeyguardTouchDelegate.getInstance(mContext);
-<<<<<<< HEAD
-        boolean interrupt = (isFullscreen || (isHighPriority && (isNoisy || hasTicker)))
-=======
         boolean keyguardIsShowing = keyguard.isShowingAndNotOccluded()
                 && keyguard.isInputRestricted();
 
         boolean interrupt = (isFullscreen || (isHighPriority && isNoisy)
                 || asHeadsUp == Notification.HEADS_UP_REQUESTED)
->>>>>>> d8a4637... Frameworks: Slim heads up customizations for LP (1/2)
                 && isAllowed
                 && !accessibilityForcesLaunch
                 && mPowerManager.isScreenOn()
