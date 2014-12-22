@@ -5548,6 +5548,42 @@ public final class Settings {
         public static final String LOCKSCREEN_QUICK_UNLOCK_CONTROL = "lockscreen_quick_unlock_control";
 
         /**
+         * Whether the user has enabled headsup (Default 1)
+         * HeadsUp is enabled by default within its Settings.Global.HEADS_UP_NOTIFICATIONS_ENABLED
+         * setting. Avoid changing low level implementations and use a System setting to
+         * override per-user heads up on/off preference.
+         *
+         * Enable headsup = 1 (on by default)
+         * Disable headsup = 0
+         *
+         * @see com.android.systemui.statusbar.BaseStatusBar#addNotification
+         * @hide
+         */
+       public static final String HEADS_UP_USER_ENABLED =
+                "heads_up_user_enabled";
+
+        /** @hide */ public static final int HEADS_UP_USER_OFF = 0;
+        /** @hide */ public static final int HEADS_UP_USER_ON = 1;
+
+        /**
+         * Whether we want to filter in non-noisy ticker equipped notifications (Default 0)
+         * Applies to those that doesn't generate noise but are rich
+         * notifications.
+         *
+         * NOTE: This is an experimental setting, since it brokes some
+         *       notifications as for group ones. Will store this is
+         *       DevelopmentSettings, default is disabled.
+         *
+         * @see com.android.systemui.statusbar.phone.PhoneStatusBar#mHeadsUpTicker
+         * @hide
+         */
+        public static final String HEADS_UP_TICKER_ENABLED =
+                "heads_up_ticker_enabled";
+
+        /** @hide */ public static final int HEADS_UP_TICKER_OFF = 0;
+        /** @hide */ public static final int HEADS_UP_TICKER_ON = 1;
+
+        /**
          * Performance profile
          * @see config_perf_profile_prop in frameworks/base/core/res/res/values/config.xml
          * @hide
