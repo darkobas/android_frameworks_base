@@ -581,7 +581,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private boolean mVolumeUpKeyConsumedByScreenshotChord;
     private long mPowerKeyTime;
     private boolean mVolumeMusicControls;
-    private boolean mIsLongPress;
 
     /* The number of steps between min and max brightness */
     private static final int BRIGHTNESS_STEPS = 10;
