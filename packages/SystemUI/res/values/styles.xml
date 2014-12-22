@@ -16,7 +16,7 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="RecentsStyle" parent="@android:style/Theme.DeviceDefault.Wallpaper.NoTitleBar">
+    <style name="RecentsStyle" parent="@android:style/Theme.Material.Wallpaper.NoTitleBar">
         <item name="android:windowAnimationStyle">@style/Animation.RecentsActivity</item>
     </style>
 
@@ -224,12 +224,12 @@
         <item name="android:textSize">14dp</item>
     </style>
 
-    <style name="systemui_theme" parent="@android:style/Theme.DeviceDefault">
+    <style name="systemui_theme" parent="@android:style/Theme.Material">
         <item name="android:colorPrimary">@color/system_primary_color</item>
         <item name="android:colorControlActivated">@color/system_accent_color</item>
     </style>
 
-    <style name="Theme.SystemUI.Dialog" parent="@android:style/Theme.DeviceDefault.Light.Dialog">
+    <style name="Theme.SystemUI.Dialog" parent="@android:style/Theme.DeviceDefault.Dialog">
         <item name="android:colorPrimary">@color/system_primary_color</item>
         <item name="android:colorControlActivated">@color/system_accent_color</item>
     </style>
