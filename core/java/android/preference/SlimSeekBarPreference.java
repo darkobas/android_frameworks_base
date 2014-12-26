@@ -14,7 +14,7 @@ import android.widget.TextView;
 public class SlimSeekBarPreference extends Preference
         implements OnSeekBarChangeListener {
 
-    public static int maximum = 100;
+    public int maximum = 100;
     public int interval = 5;
 
     private TextView monitorBox;
@@ -44,6 +44,7 @@ public class SlimSeekBarPreference extends Preference
                 layout.findViewById(com.android.internal.R.id.monitor_box);
         bar = (SeekBar) layout.findViewById(com.android.internal.R.id.seek_bar);
         bar.setOnSeekBarChangeListener(this);
+        bar.setMax(maximum);
         bar.setProgress(defaultValue);
 
         return layout;
@@ -119,6 +120,10 @@ public class SlimSeekBarPreference extends Preference
 
     public void minimumValue(int val) {
         mMinimum = val;
+    }
+
+    public void maximumValue(int val) {
+        maximum = val;
     }
 
     public void isMilliseconds(boolean millis) {
