@@ -276,7 +276,7 @@
     <integer name="volume_panel_dismiss_delay">200</integer>
 
     <!-- Tiles with feature timeouts: number of days to show after feature is used. -->
-    <integer name="days_to_show_timeout_tiles">1</integer>
+    <integer name="days_to_show_timeout_tiles">5</integer>
 
     <!-- Whether to enable to show task manager or not -->
     <bool name="config_showTaskManagerSwitcher">false</bool>
