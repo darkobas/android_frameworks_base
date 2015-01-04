@@ -28,7 +28,7 @@ for root, dirs, files in os.walk('.'):
         if alpha:
             src = src[0:-6]
             if "ic_doc" in src or "ic_root" in src or "ic_grid_folder" in src:
-                alpha_clause = '\n    android:tint="@*android:color/secondary_text_material_light"'
+                alpha_clause = '\n    android:tint="@*android:color/secondary_text_material_dark"'
             else:
                 alpha_clause = '\n    android:tint="?android:attr/colorControlNormal"'
         else:
