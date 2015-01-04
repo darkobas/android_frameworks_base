@@ -1622,11 +1622,14 @@ public final class PowerManagerService extends SystemService
                                 keyboardBrightness = mButtonBrightnessOverrideFromWindowManager;
                             } else {
                                 buttonBrightness = mButtonBrightness;
+                                keyboardBrightness = mKeyboardBrightness;
                             }
                         } else {
                             /* otherwise set it to 0 */
                             buttonBrightness = 0;
+                            keyboardBrightness = 0;
                         }
+                        mKeyboardLight.setBrightness(mKeyboardVisible ? keyboardBrightness : 0);
                         if (mButtonTimeout != 0 && now > mLastUserActivityTime + mButtonTimeout) {
                              mButtonsLight.setBrightness(0);
                         } else {
