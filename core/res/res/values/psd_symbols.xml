@@ -20,4 +20,9 @@
   <java-symbol type="color" name="global_actions_icon_color_normal" />
   <java-symbol type="color" name="global_actions_icon_color_selected" />
   <java-symbol type="color" name="global_actions_icon_color_enabled" />
+
+  <!-- Config Power Menu -->
+  <java-symbol type="drawable" name="ic_lock_screen_record" />
+  <java-symbol type="string" name="global_action_screen_record" />
+  <java-symbol type="bool" name="config_enableScreenrecordChord" />
 </resources>
