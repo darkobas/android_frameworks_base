@@ -66,7 +66,6 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         public void onAllTaskViewsDismissed();
         public void onExitToHomeAnimationTriggered();
     }
-
     RecentsConfiguration mConfig;
     LayoutInflater mInflater;
     DebugOverlayView mDebugOverlay;
@@ -299,16 +298,22 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
             switch (clearRecentsLocation) {
                 case Constants.DebugFlags.App.RECENTS_CLEAR_ALL_TOP_LEFT:
                     params.gravity = Gravity.TOP | Gravity.LEFT;
+                    params.topMargin += 32;
                     break;
                 case Constants.DebugFlags.App.RECENTS_CLEAR_ALL_TOP_RIGHT:
                     params.gravity = Gravity.TOP | Gravity.RIGHT;
+                    params.topMargin += 32;
                     break;
                 case Constants.DebugFlags.App.RECENTS_CLEAR_ALL_BOTTOM_LEFT:
                     params.gravity = Gravity.BOTTOM | Gravity.LEFT;
+                    params.bottomMargin = mConfig.systemInsets.bottom;
+                    params.bottomMargin += 32;
                     break;
                 case Constants.DebugFlags.App.RECENTS_CLEAR_ALL_BOTTOM_RIGHT:
                 default:
                     params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
+                    params.bottomMargin = mConfig.systemInsets.bottom;
+                    params.bottomMargin += 32;
                     break;
             }
             mFloatingButton.setLayoutParams(params);

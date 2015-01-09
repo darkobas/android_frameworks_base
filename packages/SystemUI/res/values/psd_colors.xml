@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Floating action button -->
-    <color name="fab_color">#ff009688</color>
-    <color name="floating_action_button_icon_color">#ffffff</color>
+    <color name="fab_color">#ff424242</color>
+    <color name="floating_action_button_icon_color">#009688</color>
 
 </resources>
