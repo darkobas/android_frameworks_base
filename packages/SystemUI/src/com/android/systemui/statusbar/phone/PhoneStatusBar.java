@@ -71,6 +71,7 @@ import android.media.session.MediaController;
 import android.media.session.MediaSession;
 import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -1525,7 +1526,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
             mWindowManager.addView(mHeadsUpNotificationView, lp);
             mHeadsUpViewAttached = true;
-        }
     }
 
     private void removeHeadsUpView() {
