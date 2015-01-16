@@ -3276,12 +3276,6 @@ public final class Settings {
         public static final String RECENTS_CLEAR_ALL_DISMISS_ALL = "recents_clear_all_dismiss_all";
 
         /**
-         * Locale for secondary overlay on dialer for t9 search input
-         * @hide
-         */
-        public static final String T9_SEARCH_INPUT_LOCALE = "t9_search_input_locale";
-
-        /**
          * Whether the user has enabled headsup (Default 1)
          * HeadsUp is enabled by default within its Settings.Global.HEADS_UP_NOTIFICATIONS_ENABLED
          * setting. Avoid changing low level implementations and use a System setting to
