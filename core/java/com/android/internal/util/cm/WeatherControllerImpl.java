@@ -91,6 +91,17 @@ public class WeatherControllerImpl implements WeatherController {
         }
     }
 
+    private Drawable getIcon(int conditionCode) {
+        try {
+            Resources resources =
+                    mContext.createPackageContext(LOCK_CLOCK_PACKAGE_NAME, 0).getResources();
+            return resources.getDrawable(resources.getIdentifier("weather_" + conditionCode,
+                    "drawable", LOCK_CLOCK_PACKAGE_NAME));
+        } catch (PackageManager.NameNotFoundException e) {
+            return null;
+        }
+    }
+
     @Override
     public WeatherInfo getWeatherInfo() {
         return mCachedInfo;
@@ -153,5 +164,4 @@ public class WeatherControllerImpl implements WeatherController {
             fireCallback();
         }
     }
-
 }
