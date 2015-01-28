@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Floating action button -->
-    <color name="fab_color">#ff424242</color>
+    <color name="fab_color">@android:color/background_material_light</color>
     <color name="floating_action_button_icon_color">#009688</color>
 
+    <color name="navring_check_tint">@android:color/white</color>
+    <color name="navring_edit_fill">#FF558B2F</color>
+    <color name="navring_edit_tint">#FF689F38</color>
 </resources>
