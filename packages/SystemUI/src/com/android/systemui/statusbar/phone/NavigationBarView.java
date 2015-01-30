@@ -92,6 +92,7 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
     private BackButtonDrawable mBackIcon, mBackLandIcon;
     private Drawable mRecentIcon, mRecentAltIcon;
     private Drawable mRecentLandIcon, mRecentAltLandIcon;
+    private Drawable mHomeIcon, mHomeLandIcon;
 
     private NavigationBarViewTaskSwitchHelper mTaskSwitchHelper;
     private DelegateViewHelper mDelegateHelper;
@@ -321,6 +322,8 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
         mRecentLandIcon = res.getDrawable(R.drawable.ic_sysbar_recent_land);
         mRecentAltIcon = res.getDrawable(R.drawable.ic_sysbar_recent_clear);
         mRecentAltLandIcon = res.getDrawable(R.drawable.ic_sysbar_recent_clear_land);
+        mHomeIcon = res.getDrawable(R.drawable.ic_sysbar_home);
+        mHomeLandIcon = res.getDrawable(R.drawable.ic_sysbar_home_land);
     }
 
     @Override
@@ -369,7 +372,6 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
         mBackLandIcon.setImeVisible(backAlt);
         mBackIcon.setImeVisible(backAlt);
 
-        ((ImageView)getRecentsButton()).setImageDrawable(mVertical ? mRecentLandIcon : mRecentIcon);
         ((ImageView)getHomeButton()).setImageDrawable(mVertical ? mHomeLandIcon : mHomeIcon);
 
         final boolean showImeButton = ((hints & StatusBarManager.NAVIGATION_HINT_IME_SHOWN) != 0)
