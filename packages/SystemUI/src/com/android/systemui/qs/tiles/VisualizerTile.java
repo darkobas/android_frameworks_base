@@ -57,6 +57,7 @@ public class VisualizerTile extends QSTile<QSTile.State>
     private ImageView mStaticVisualizerIcon;
     private boolean mLinked;
     private boolean mIsAnythingPlaying;
+    private boolean mTileVisible;
     private boolean mListening;
 
     public VisualizerTile(Host host) {
@@ -71,6 +72,7 @@ public class VisualizerTile extends QSTile<QSTile.State>
         for (MediaController activeSession : activeSessions) {
             PlaybackState playbackState = activeSession.getPlaybackState();
             if (playbackState != null && playbackState.getState() == PlaybackState.STATE_PLAYING) {
+                mTileVisible = true;
                 mIsAnythingPlaying = true;
                 break;
             }
@@ -146,7 +148,7 @@ public class VisualizerTile extends QSTile<QSTile.State>
 
     @Override
     protected void handleUpdateState(State state, Object arg) {
-        state.visible = true;
+        state.visible = mTileVisible;
         state.label = mContext.getString(R.string.quick_settings_visualizer_label);
 
         mUiHandler.post(mUpdateVisibilities);
@@ -158,8 +160,12 @@ public class VisualizerTile extends QSTile<QSTile.State>
         mListening = listening;
         if (listening) {
             mMediaSessionManager.addOnActiveSessionsChangedListener(this, null);
+            if (mTileVisible) {
+                AsyncTask.execute(mLinkVisualizer);
+            }
         } else {
             mMediaSessionManager.removeOnActiveSessionsChangedListener(this);
+            AsyncTask.execute(mUnlinkVisualizer);
         }
     }
 
@@ -193,6 +199,10 @@ public class VisualizerTile extends QSTile<QSTile.State>
                 break;
             }
         }
+        if (anythingPlaying != mTileVisible) {
+            mTileVisible = anythingPlaying;
+            refreshState();
+	}
         if (anythingPlaying != mIsAnythingPlaying) {
             mIsAnythingPlaying = anythingPlaying;
             if (mIsAnythingPlaying && !mLinked) {
