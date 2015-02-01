@@ -160,12 +160,12 @@
     <color name="user_icon_default_white">#ffffffff</color><!-- white -->
 
     <!-- Exposed resources for theming -->
-    <color name="exposed_bg_dark">#ff000000</color>
-    <color name="exposed_bg_light">#fffefefe</color>
-    <color name="exposed_primary_text_light">#deffffff</color>
-    <color name="exposed_secondary_text_light">#8affffff</color>
-    <color name="exposed_primary_text_dark">#ff424242</color>
-    <color name="exposed_secondary_text_dark">#b3424242</color>
+    <color name="exposed_bg_dark">#ffffffff</color>
+    <color name="exposed_bg_light">#ff212121</color>
+    <color name="exposed_primary_text_light">#de000000</color>
+    <color name="exposed_secondary_text_light">#8a000000</color>
+    <color name="exposed_primary_text_dark">#ffffffff</color>
+    <color name="exposed_secondary_text_dark">#b3ffffff</color>
     <color name="exposed_notification_big_pic_bg">#cceeeeee</color>
     <color name="exposed_resolver_list_bg">#ffffffff</color>
     <color name="exposed_notify_action_text">#ff212121</color>
@@ -174,6 +174,5 @@
     <color name="exposed_TextAppearance.StatusBar.EventContent.Emphasis">#CCCCCC</color>
     <color name="exposed_TextAppearance.EasyCorrectSuggestion">#88C8C8C8</color>
     <color name="exposed_Widget.Material.Light.Button_TS">#555555</color>
-
 </resources>
 
