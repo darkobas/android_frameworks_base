@@ -3478,7 +3478,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     private void addStatusBarWindow() {
         makeStatusBarView();
-        mStatusBarWindowManager = new StatusBarWindowManager(mContext, this);
+        mStatusBarWindow.addContent(mStatusBarWindowContent);
+        mStatusBarWindowManager = new StatusBarWindowManager(mContext, mKeyguardMonitor);
         mStatusBarWindowManager.add(mStatusBarWindow, getStatusBarHeight());
     }
 
