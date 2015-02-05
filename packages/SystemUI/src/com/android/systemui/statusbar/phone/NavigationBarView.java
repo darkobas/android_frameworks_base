@@ -361,6 +361,16 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
         mNavigationIconHints = hints;
 
         if (button == NavigationCallback.NAVBAR_RECENTS_HINT) {
+            View one = getCurrentView().findViewById(mVertical ? R.id.six : R.id.one);
+            View six = getCurrentView().findViewById(mVertical ? R.id.one : R.id.six);
+                if (mSlotOneVisibility != -1) {
+                    one.setVisibility(mSlotOneVisibility);
+                    mSlotOneVisibility = -1;
+                }
+                if (mSlotSixVisibility != -1) {
+                    six.setVisibility(mSlotSixVisibility);
+                    mSlotSixVisibility = -1;
+                }
             ((ImageView)getRecentsButton()).setImageDrawable(
                     (0 != (hints & StatusBarManager.NAVIGATION_HINT_RECENT_ALT))
                             ? (mVertical ? mRecentAltLandIcon : mRecentAltIcon)
