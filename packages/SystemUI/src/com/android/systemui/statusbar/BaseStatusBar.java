@@ -2169,8 +2169,9 @@ public abstract class BaseStatusBar extends SystemUI implements
                 && isAllowed
                 && !accessibilityForcesLaunch
                 && mPowerManager.isScreenOn()
-                && !keyguardIsShowing;
                 && !zenBlocksHeadsUp
+                && !keyguardIsShowing
+                && !isImeShowing();;
         try {
             interrupt = interrupt && !mDreamManager.isDreaming();
         } catch (RemoteException e) {
