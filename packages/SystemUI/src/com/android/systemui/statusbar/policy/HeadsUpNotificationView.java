@@ -39,8 +39,8 @@ import com.android.systemui.statusbar.ExpandableView;
 import com.android.systemui.statusbar.NotificationData;
 import com.android.systemui.statusbar.phone.PhoneStatusBar;
 
-public class HeadsUpNotificationView extends FrameLayout implements SwipeHelper.Callback,
-        ExpandHelper.Callback, ViewTreeObserver.OnComputeInternalInsetsListener {
+public class HeadsUpNotificationView extends FrameLayout implements SwipeHelper.Callback, ExpandHelper.Callback,
+        ViewTreeObserver.OnComputeInternalInsetsListener {
     private static final String TAG = "HeadsUpNotificationView";
     private static final boolean DEBUG = false;
     private static final boolean SPEW = DEBUG;
@@ -60,8 +60,6 @@ public class HeadsUpNotificationView extends FrameLayout implements SwipeHelper.
     private ViewGroup mContentHolder;
 
     private NotificationData.Entry mHeadsUp;
-
-    private boolean mTouchOutside;
 
     public HeadsUpNotificationView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -96,28 +94,20 @@ public class HeadsUpNotificationView extends FrameLayout implements SwipeHelper.
             release();
         }
 
-        mHeadsUp = headsUp; // set new entry
-
-        if (mBar.isExpandedVisible() || mBar.isImeShowing()) {
-            releaseAndClose();
-            return false; // There is really no need, right?
-        }
-
+        mHeadsUp = headsUp;
         if (mContentHolder != null) {
             mContentHolder.removeAllViews();
-        } else {
-            // too soon! Reparent and exit here.
-            releaseAndClose();
-            return false;
         }
-
-        mTouchOutside = false;
 
         if (mHeadsUp != null) {
             mHeadsUp.row.setSystemExpanded(true);
             mHeadsUp.row.setSensitive(false);
             mHeadsUp.row.setHideSensitive(
                     false, false /* animated */, 0 /* delay */, 0 /* duration */);
+            if (mContentHolder == null) {
+                // too soon!
+                return false;
+            }
             mContentHolder.setX(0);
             mContentHolder.setVisibility(View.VISIBLE);
             mContentHolder.setAlpha(mMaxAlpha);
@@ -161,10 +151,10 @@ public class HeadsUpNotificationView extends FrameLayout implements SwipeHelper.
         if (mHeadsUp == null) return;
         if (mHeadsUp.notification.isClearable()) {
             mBar.onNotificationClear(mHeadsUp.notification);
-            mHeadsUp = null;
         } else {
             release();
         }
+        mHeadsUp = null;
         mBar.scheduleHeadsUpClose();
     }
 
@@ -172,8 +162,8 @@ public class HeadsUpNotificationView extends FrameLayout implements SwipeHelper.
     public void release() {
         if (mHeadsUp != null) {
             mBar.displayNotificationFromHeadsUp(mHeadsUp.notification);
-            mHeadsUp = null;
         }
+        mHeadsUp = null;
     }
 
     public void releaseAndClose() {
@@ -226,8 +216,6 @@ public class HeadsUpNotificationView extends FrameLayout implements SwipeHelper.
         }
 
         getViewTreeObserver().addOnComputeInternalInsetsListener(this);
-
-        mTouchOutside = false;
     }
 
     @Override
@@ -263,24 +251,11 @@ public class HeadsUpNotificationView extends FrameLayout implements SwipeHelper.
         if (System.currentTimeMillis() < mStartTouchTime) {
             return false;
         }
-        switch (ev.getAction()) {
-            case MotionEvent.ACTION_OUTSIDE:
-                if (mTouchOutside) return true;
-                // Hide headsup, after 1 sec.
-                mBar.getHandler().postDelayed(new Runnable() {
-                    public void run() {
-                        mBar.scheduleHeadsUpClose();
-                    }
-                }, 1000);
-                mTouchOutside = true;
-                return true;
-            default:
-                mBar.resetHeadsUpDecayTimer();
-                return mEdgeSwipeHelper.onTouchEvent(ev)
-                        || mSwipeHelper.onTouchEvent(ev)
-                        || mExpandHelper.onTouchEvent(ev)
-                        || super.onTouchEvent(ev);
-        }
+        mBar.resetHeadsUpDecayTimer();
+        return mEdgeSwipeHelper.onTouchEvent(ev)
+                || mSwipeHelper.onTouchEvent(ev)
+                || mExpandHelper.onTouchEvent(ev)
+                || super.onTouchEvent(ev);
     }
 
     @Override
@@ -346,15 +321,13 @@ public class HeadsUpNotificationView extends FrameLayout implements SwipeHelper.
     }
 
     @Override
-    public void onChildDismissed(View v) {
-        Log.v(TAG, "User swiped heads up to dismiss");
-        mBar.onHeadsUpDismissed();
+    public void onChildDismissed(View v, boolean direction) {
+        if (DEBUG)  Log.v(TAG, "User swiped heads up to dismiss");
+        mBar.onHeadsUpDismissed(direction);
     }
 
     @Override
     public void onBeginDrag(View v) {
-        // Prevent any surrounding View from intercepting us now.
-        requestDisallowInterceptTouchEvent(true);
     }
 
     @Override
@@ -402,7 +375,6 @@ public class HeadsUpNotificationView extends FrameLayout implements SwipeHelper.
 
     private class EdgeSwipeHelper implements Gefingerpoken {
         private static final boolean DEBUG_EDGE_SWIPE = false;
-        private static final boolean ENABLE_AOSP_BEHAVIOUR = false;
         private final float mTouchSlop;
         private boolean mConsuming;
         private float mFirstY;
@@ -429,21 +401,11 @@ public class HeadsUpNotificationView extends FrameLayout implements SwipeHelper.
                     final float daY = Math.abs(dY);
                     if (!mConsuming && (4f * daX) < daY && daY > mTouchSlop) {
                         if (dY > 0) {
-                            if (ENABLE_AOSP_BEHAVIOUR) {
-                                if (DEBUG_EDGE_SWIPE) Log.d(TAG, "found an open");
-                                mBar.animateExpandNotificationsPanel();
-                            } else {
-                                mConsuming = true;
-                            }
-                        } else if (dY < 0) {
-                            if (ENABLE_AOSP_BEHAVIOUR) {
-                                if (DEBUG_EDGE_SWIPE) Log.d(TAG, "found a close");
-                                mBar.onHeadsUpDismissed();
-                            } else {
-                                releaseAndClose();
-                            }
-                            mConsuming = true;
+                            if (DEBUG_EDGE_SWIPE) Log.d(TAG, "found an open");
+                            mBar.animateExpandNotificationsPanel();
+                            mBar.onHeadsUpDismissed(true);
                         }
+                        mConsuming = true;
                     }
                     break;
 
