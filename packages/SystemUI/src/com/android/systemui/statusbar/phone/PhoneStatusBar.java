@@ -485,7 +485,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mBrightnessControl = Settings.System.getInt(
                     resolver, Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL, 0) == 1;
             mHeadsUpSwype = Settings.System.getInt(
-                    resolver, Settings.System.HEADS_UP_DISMISS_ON_REMOVE, 1) == 1;
+                    resolver, Settings.System.HEADS_UP_DISMISS_ON_REMOVE, 0) == 1;
         }
     }
 
