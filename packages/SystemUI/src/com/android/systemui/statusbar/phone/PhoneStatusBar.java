@@ -490,7 +490,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mHeadsUpSwype = Settings.System.getInt(
                     resolver, Settings.System.HEADS_UP_DISMISS_ON_REMOVE, 0) == 1;
             mHeadsUpTouchOutside = Settings.System.getInt(
-                    resolver, Settings.System.HEADS_UP_TOUCH_OUTSIDE, 0) == 1
+                    resolver, Settings.System.HEADS_UP_TOUCH_OUTSIDE, 0) == 1;
         }
     }
 

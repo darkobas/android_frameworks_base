@@ -281,6 +281,7 @@ public class HeadsUpNotificationView extends FrameLayout implements SwipeHelper.
                        || mSwipeHelper.onTouchEvent(ev)
                         || mExpandHelper.onTouchEvent(ev)
                         || super.onTouchEvent(ev);
+    	}
     }
 
     @Override
