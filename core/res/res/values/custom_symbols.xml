@@ -19,13 +19,5 @@
 */
 -->
 <resources>
-  <string-array translatable="false" name="config_rebootActionsList">
-    <item>reboot</item>
-    <item>reboot_recovery</item>
-    <item>reboot_bootloader</item>
-  </string-array>
-
-    <!-- Doze: force using accelerometer as pick up sensor -->
-    <bool name="config_dozeUseAccelerometer">false</bool>
-
+  <java-symbol type="bool" name="config_dozeUseAccelerometer" />
 </resources>
