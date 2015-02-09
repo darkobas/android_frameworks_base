@@ -560,13 +560,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mUseHeadsUp = ENABLE_HEADS_UP && !mDisableNotificationAlerts && Settings.System.getIntForUser(
                     mContext.getContentResolver(),
                     Settings.System.HEADS_UP_NOTIFICATION, 0, UserHandle.USER_CURRENT) == 1;
-            mHeadsUpTicker = mUseHeadsUp && 0 != Settings.System.getIntForUser(
-                    mContext.getContentResolver(), Settings.System.HEADS_UP_TICKER_ENABLED,
-                    Settings.System.HEADS_UP_TICKER_OFF,
-                    UserHandle.USER_CURRENT);
-            Log.d(TAG, "heads up is " + (mUseHeadsUp && mHeadsUpUserEnabled ? "enabled" : "disabled"));
-            if ((wasUsing != mUseHeadsUp) || !mHeadsUpUserEnabled) {
-                if (!mUseHeadsUp || !mHeadsUpUserEnabled) {
+            mHeadsUpTicker = mUseHeadsUp && 0 != Settings.Global.getInt(
+                    mContext.getContentResolver(), SETTING_HEADS_UP_TICKER, 0);
+            Log.d(TAG, "heads up is " + (mUseHeadsUp ? "enabled" : "disabled"));
+            if (wasUsing != mUseHeadsUp) {
+                if (!mUseHeadsUp) {
                     Log.d(TAG, "dismissing any existing heads up notification on disable event");
                     setHeadsUpVisibility(false);
                     mHeadsUpNotificationView.release();
@@ -783,12 +781,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.getUriFor(Settings.System.HEADS_UP_NOTIFICATION), true,
                     mHeadsUpObserver, mCurrentUserId);
             mContext.getContentResolver().registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.HEADS_UP_TICKER_ENABLED), true,
-                    mHeadsUpObserver);
-            mContext.getContentResolver().registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.HEADS_UP_USER_ENABLED), true,
+                    Settings.Global.getUriFor(SETTING_HEADS_UP_TICKER), true,
                     mHeadsUpObserver);
         }
+
         mUnlockMethodCache = UnlockMethodCache.getInstance(mContext);
         startKeyguard();
 
@@ -1544,14 +1540,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         lp.packageName = mContext.getPackageName();
         lp.windowAnimations = R.style.Animation_StatusBar_HeadsUp;
 
-            mWindowManager.addView(mHeadsUpNotificationView, lp);
-            mHeadsUpViewAttached = true;
+        mWindowManager.addView(mHeadsUpNotificationView, lp);
     }
 
     private void removeHeadsUpView() {
-        if (mHeadsUpNotificationView != null && mHeadsUpNotificationView.isAttachedToWindow()) {
-            mWindowManager.removeView(mHeadsUpNotificationView);
-        }
+        mWindowManager.removeView(mHeadsUpNotificationView);
     }
 
     public void refreshAllStatusBarIcons() {
