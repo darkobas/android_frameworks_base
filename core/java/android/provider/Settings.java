@@ -3534,10 +3534,10 @@ public final class Settings {
             VIBRATE_WHEN_RINGING,
             RINGTONE,
             NOTIFICATION_SOUND,
+            STATUS_BAR_SHOW_BATTERY_PERCENT,
             INCREASING_RING,
             INCREASING_RING_START_VOLUME,
-            INCREASING_RING_RAMP_UP_TIME,
-            STATUS_BAR_SHOW_BATTERY_PERCENT
+            INCREASING_RING_RAMP_UP_TIME
         };
 
         /**
