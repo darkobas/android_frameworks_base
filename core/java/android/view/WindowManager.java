@@ -1138,19 +1138,6 @@ public interface WindowManager extends ViewManager {
         public static final int PRIVATE_FLAG_BLUR_WITH_MASKING_SCALED = 0x80000000;
 
         /**
-         * Window flag: adding additional blur layer and set this as masking layer
-         * {@hide}
-         */
-        public static final int PRIVATE_FLAG_BLUR_WITH_MASKING = 0x40000000;
-
-        /**
-         * Window flag: adding additional blur layer and set this as masking layer.
-         * This is faster and ugglier than non-scaled version.
-         * {@hide}
-         */
-        public static final int PRIVATE_FLAG_BLUR_WITH_MASKING_SCALED = 0x80000000;
-
-        /**
          * Control flags that are private to the platform.
          * @hide
          */
