@@ -122,6 +122,7 @@ import com.android.internal.util.gesture.EdgeGesturePosition;
 import com.android.internal.util.gesture.EdgeServiceConstants;
 import com.android.internal.widget.PointerLocationView;
 import com.android.server.LocalServices;
+import com.android.internal.util.omni.DeviceUtils;
 
 import java.io.File;
 import java.io.FileReader;
@@ -202,6 +203,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private static final int KEY_ACTION_LAUNCH_CAMERA = 6;
     private static final int KEY_ACTION_SLEEP = 7;
     private static final int KEY_ACTION_LAST_APP = 8;
+    private static final int KEY_ACTION_BACK = 9;
 
     // Masks for checking presence of hardware keys.
     // Must match values in core/res/res/values/config.xml
@@ -528,6 +530,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     boolean mHomeConsumed;
     boolean mHomeDoubleTapPending;
     boolean mMenuPressed;
+    boolean mBackDoCustomAction;
     boolean mAppSwitchLongPressed;
     Intent mHomeIntent;
     Intent mCarDockIntent;
@@ -539,6 +542,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     // Tracks user-customisable behavior for certain key events
     private int mLongPressOnHomeBehavior = -1;
+    private int mLongPressOnBackBehavior = -1;
+    private int mPressOnBackBehavior = -1;
     private int mPressOnMenuBehavior = -1;
     private int mLongPressOnMenuBehavior = -1;
     private int mPressOnAssistBehavior = -1;
@@ -1263,6 +1268,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             case KEY_ACTION_LAST_APP:
                 ActionUtils.switchToLastApp(mContext, mCurrentUserId);
                 break;
+            case KEY_ACTION_BACK:
+                triggerVirtualKeypress(KeyEvent.KEYCODE_BACK);
+                break;
             default:
                 break;
         }
@@ -1493,6 +1501,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         mLongPressOnAssistBehavior = KEY_ACTION_VOICE_SEARCH;
         mPressOnAppSwitchBehavior = KEY_ACTION_APP_SWITCH;
         mLongPressOnAppSwitchBehavior = KEY_ACTION_NOTHING;
+        mLongPressOnBackBehavior = KEY_ACTION_NOTHING;
+        mPressOnBackBehavior = KEY_ACTION_BACK;
 
         mLongPressOnHomeBehavior = mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_longPressOnHomeBehavior);
@@ -2887,11 +2897,22 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     if (!keyguardOn && mLongPressOnMenuBehavior != KEY_ACTION_NOTHING) {
                         if (mLongPressOnMenuBehavior != KEY_ACTION_APP_SWITCH) {
                             cancelPreloadRecentApps();
+			}
+                    }
+                    if (!keyguardOn) {
+                        // check for locked mode
+                        if (stopLockTaskMode()) {
+                            // Do not perform action when key is released
+                            mMenuPressed = false;
+                            return -1;
                         }
-                        performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
-                        performKeyAction(mLongPressOnMenuBehavior);
-                        mMenuPressed = false;
-                        return -1;
+                        if (mLongPressOnMenuBehavior != KEY_ACTION_NOTHING) {
+                            performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
+                            performKeyAction(mLongPressOnMenuBehavior);
+                            // Do not perform action when key is released
+                            mMenuPressed = false;
+                            return -1;
+                        }
                     }
                 }
             }
@@ -3046,6 +3067,23 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1) {
                 if (down && repeatCount == 0) {
                     mHandler.postDelayed(mBackLongPress, mBackKillTimeout);
+                }
+            }
+            if (!keyguardOn) {
+                 if (mLongPressOnBackBehavior != KEY_ACTION_NOTHING) {
+                 performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
+
+                 performKeyAction(mLongPressOnBackBehavior);
+                 // Do not perform action when key is released
+                 mBackDoCustomAction = false;
+                 return -1;
+                 }
+            }
+            if (mBackDoCustomAction) {
+                mBackDoCustomAction = false;
+                if (!canceled && !keyguardOn) {
+                    performKeyAction(mPressOnBackBehavior);
+                    return -1;
                 }
             }
         }
@@ -7020,5 +7058,20 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         if (mOrientationListener != null) {
             mOrientationListener.dump(pw, prefix);
         }
+    }
+
+    private boolean stopLockTaskMode() {
+        // in this case there is a different way to stop it
+        if (DeviceUtils.deviceSupportNavigationBar(mContext)) {
+            return false;
+        }
+        try {
+            if (ActivityManagerNative.getDefault().isInLockTaskMode()) {
+                ActivityManagerNative.getDefault().stopLockTaskModeOnCurrent();
+                return true;
+            }
+        } catch (RemoteException e) {
+        }
+        return false;
     }
 }

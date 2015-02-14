@@ -3111,6 +3111,7 @@ public final class Settings {
          * 6 - Launch Camera
          * 7 - Action Sleep
          * 8 - Last app
+         * 9 - Back
          * @hide
          */
         public static final String KEY_HOME_LONG_PRESS_ACTION = "key_home_long_press_action";
@@ -3219,6 +3220,12 @@ public final class Settings {
          * @hide
          */
         public static final String INCREASING_RING_RAMP_UP_TIME = "increasing_ring_ramp_up_time";
+
+        /**
+         * Whether lock-to-app will lock the keyguard when exiting.
+         * @hide
+         */
+        public static final String LOCK_TO_APP_HIDE_DIALOG = "lock_to_app_hide_dialog";
 
         /**
          * I am the lolrus.

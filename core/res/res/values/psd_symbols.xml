@@ -27,4 +27,5 @@
   <java-symbol type="bool" name="config_enableScreenrecordChord" />
   <!-- Blur effects -->
   <java-symbol type="bool" name="config_ui_blur_enabled" />
+  <java-symbol type="id" name="hide_lock_to_app_checkbox" />
 </resources>
