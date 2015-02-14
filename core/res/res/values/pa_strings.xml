@@ -22,4 +22,6 @@
     <string name="setting_confirmation_ask_me_later">Ask later</string>
     <string name="setting_confirmation_yes">Yes</string>
     <string name="setting_confirmation_no">No</string>
+
+    <string name="hide_lock_to_app_dialog">Always start</string>
 </resources>
