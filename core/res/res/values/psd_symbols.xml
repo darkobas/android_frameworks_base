@@ -28,4 +28,8 @@
   <!-- Blur effects -->
   <java-symbol type="bool" name="config_ui_blur_enabled" />
   <java-symbol type="id" name="hide_lock_to_app_checkbox" />
+  <!-- Storage -->
+  <java-symbol type="string" name="storage_usb" />
+  <java-symbol type="string" name="storage_uicc" />
+  <java-symbol type="bool" name="config_batterySdCardAccessibility" />
 </resources>
