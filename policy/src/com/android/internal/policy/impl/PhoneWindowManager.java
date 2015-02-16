@@ -122,9 +122,6 @@ import com.android.internal.util.gesture.EdgeGesturePosition;
 import com.android.internal.util.gesture.EdgeServiceConstants;
 import com.android.internal.widget.PointerLocationView;
 import com.android.server.LocalServices;
-import com.android.internal.util.omni.DeviceUtils;
-
-import dalvik.system.DexClassLoader;
 
 import java.io.File;
 import java.io.FileReader;
@@ -2887,24 +2884,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         return -1;
                     }
                 } else if (longPress) {
-                    if (mRecentAppsPreloaded &&
-                            mLongPressOnMenuBehavior != KEY_ACTION_APP_SWITCH) {
-                        cancelPreloadRecentApps();
-                    }
-                    if (!keyguardOn) {
-                        // check for locked mode
-                        if (stopLockTaskMode()) {
-                            // Do not perform action when key is released
-                            mMenuDoCustomAction = false;
-                            return -1;
+                    if (!keyguardOn && mLongPressOnMenuBehavior != KEY_ACTION_NOTHING) {
+                        if (mLongPressOnMenuBehavior != KEY_ACTION_APP_SWITCH) {
+                            cancelPreloadRecentApps();
                         }
-                        if (mLongPressOnMenuBehavior != KEY_ACTION_NOTHING) {
-                            performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
-                            performKeyAction(mLongPressOnMenuBehavior);
-                            // Do not perform action when key is released
-                            mMenuDoCustomAction = false;
-                            return -1;
-                        }
+                        performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
+                        performKeyAction(mLongPressOnMenuBehavior);
+                        mMenuPressed = false;
+                        return -1;
                     }
                 }
             }
@@ -3059,44 +3046,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1) {
                 if (down && repeatCount == 0) {
                     mHandler.postDelayed(mBackLongPress, mBackKillTimeout);
-            if (down) {
-                if (!mRecentAppsPreloaded && (mPressOnBackBehavior == KEY_ACTION_APP_SWITCH
-                        || mLongPressOnBackBehavior == KEY_ACTION_APP_SWITCH)) {
-                    preloadRecentApps();
-                }
-                if (repeatCount == 0) {
-                    if (mPressOnBackBehavior != KEY_ACTION_BACK && !virtualKey) {
-                        mBackDoCustomAction = true;
-                        return -1;
-                    }
-                } else if (longPress) {
-                    if (mRecentAppsPreloaded &&
-                            mLongPressOnBackBehavior != KEY_ACTION_APP_SWITCH) {
-                        cancelPreloadRecentApps();
-                    }
-                    if (!keyguardOn) {
-                        if (mLongPressOnBackBehavior != KEY_ACTION_NOTHING) {
-                            performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
-
-                            performKeyAction(mLongPressOnBackBehavior);
-                            // Do not perform action when key is released
-                            mBackDoCustomAction = false;
-                            return -1;
-                        }
-                    }
-                }
-            } else {
-                if (mRecentAppsPreloaded && mPressOnBackBehavior != KEY_ACTION_APP_SWITCH &&
-                        mLongPressOnBackBehavior != KEY_ACTION_APP_SWITCH) {
-                    cancelPreloadRecentApps();
-                }
-                if (mBackDoCustomAction) {
-                    mBackDoCustomAction = false;
-                    if (!canceled && !keyguardOn) {
-                        performKeyAction(mPressOnBackBehavior);
-                        return -1;
-                    }
->>>>>>> 119f356... [1/2] base: allow stopping pinned mode for non-navbar devices
                 }
             }
         }
@@ -7071,20 +7020,5 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         if (mOrientationListener != null) {
             mOrientationListener.dump(pw, prefix);
         }
-    }
-
-    private boolean stopLockTaskMode() {
-        // in this case there is a different way to stop it
-        if (DeviceUtils.deviceSupportNavigationBar(mContext)) {
-            return false;
-        }
-        try {
-            if (ActivityManagerNative.getDefault().isInLockTaskMode()) {
-                ActivityManagerNative.getDefault().stopLockTaskModeOnCurrent();
-                return true;
-            }
-        } catch (RemoteException e) {
-        }
-        return false;
     }
 }
