@@ -16,6 +16,7 @@
 package com.android.internal.util.omni;
 
 import android.bluetooth.BluetoothAdapter;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -23,6 +24,7 @@ import android.content.res.Resources;
 import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.nfc.NfcAdapter;
+import android.os.RemoteException;
 import android.os.SystemProperties;
 import android.os.Vibrator;
 import android.os.UserHandle;
@@ -31,14 +33,17 @@ import android.util.DisplayMetrics;
 import android.view.DisplayInfo;
 import android.view.WindowManager;
 import android.provider.Settings;
+import android.view.WindowManagerGlobal;
 
 import com.android.internal.telephony.PhoneConstants;
 import static android.hardware.Sensor.TYPE_LIGHT;
 import static android.hardware.Sensor.TYPE_PROXIMITY;
 
 import java.util.List;
+import android.util.Log;
 
 public class DeviceUtils {
+    private static final String TAG = "DeviceUtils";
 
     public static final int IMMERSIVE_MODE_OFF = 0;
     public static final int IMMERSIVE_MODE_FULL = 1;
@@ -109,26 +114,21 @@ public class DeviceUtils {
     }
 
     public static boolean deviceSupportNavigationBar(Context context) {
-        final boolean showByDefault = context.getResources().getBoolean(
-                com.android.internal.R.bool.config_showNavigationBar);
-        final int hasNavigationBar = -1;
-        /*final int hasNavigationBar = Settings.System.getIntForUser(
-                context.getContentResolver(),
-                Settings.System.NAVIGATION_BAR_SHOW, -1,
-                UserHandle.USER_CURRENT);*/
-
-        if (hasNavigationBar == -1) {
-            String navBarOverride = SystemProperties.get("qemu.hw.mainkeys");
-            if ("1".equals(navBarOverride)) {
+        final ContentResolver resolver = context.getContentResolver();
+        try { 
+            boolean forceNavbar = android.provider.Settings.System.getInt(resolver,
+                    android.provider.Settings.System.DEV_FORCE_SHOW_NAVBAR, 0) == 1;
+            boolean hasNavBar = WindowManagerGlobal.getWindowManagerService().hasNavigationBar() || forceNavbar;
+	    if (!hasNavBar) {
                 return false;
-            } else if ("0".equals(navBarOverride)) {
-                return true;
             } else {
-                return showByDefault;
+                return true;
             }
-        } else {
-            return hasNavigationBar == 1;
+	}
+        catch (RemoteException e) {
+        Log.e(TAG, "Error getting navigation bar status");
         }
+	return true;
     }
 
     private static int getScreenType(Context con) {
