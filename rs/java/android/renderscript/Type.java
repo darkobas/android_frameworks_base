@@ -52,9 +52,6 @@ public class Type extends BaseObj {
     int mDimYuv;
     int mElementCount;
     Element mElement;
-    int mArrays[];
-
-    static final int mMaxArrays = 4;
 
     public enum CubemapFace {
         POSITIVE_X (0),
@@ -149,30 +146,6 @@ public class Type extends BaseObj {
         return mElementCount;
     }
 
-    /**
-     * @hide
-     */
-    public int getArray(int dim) {
-        if ((dim < 0) || (dim >= mMaxArrays)) {
-            throw new RSIllegalArgumentException("Array dimension out of range.");
-        }
-
-        if (mArrays == null || dim >= mArrays.length) {
-            // Dimension in range but no array for that dimension allocated
-            return 0;
-        }
-
-        return mArrays[dim];
-    }
-
-    /**
-     * @hide
-     */
-    public int getArrayCount() {
-        if (mArrays != null) return mArrays.length;
-        return 0;
-    }
-
     void calcElementCount() {
         boolean hasLod = hasMipmaps();
         int x = getX();
@@ -207,13 +180,6 @@ public class Type extends BaseObj {
 
             count += x * y * z * faces;
         }
-
-        if (mArrays != null) {
-            for (int ct = 0; ct < mArrays.length; ct++) {
-                count *= mArrays[ct];
-            }
-        }
-
         mElementCount = count;
     }
 
@@ -330,7 +296,6 @@ public class Type extends BaseObj {
         boolean mDimMipmaps;
         boolean mDimFaces;
         int mYuv;
-        int[] mArray = new int[mMaxArrays];
 
         Element mElement;
 
@@ -373,22 +338,6 @@ public class Type extends BaseObj {
                 throw new RSIllegalArgumentException("Values of less than 1 for Dimension Z are not valid.");
             }
             mDimZ = value;
-            return this;
-        }
-
-        /**
-         * @hide
-         *
-         * @param dim
-         * @param value
-         *
-         * @return Builder
-         */
-        public Builder setArray(int dim, int value) {
-            if(dim < 0 || dim >= mMaxArrays) {
-                throw new RSIllegalArgumentException("Array dimension out of range.");
-            }
-            mArray[dim] = value;
             return this;
         }
 
@@ -456,16 +405,6 @@ public class Type extends BaseObj {
                 }
             }
 
-            int[] arrays = null;
-            for (int ct = mMaxArrays - 1; ct >= 0; ct--) {
-                if (mArray[ct] != 0 && arrays == null) {
-                    arrays = new int[ct];
-                }
-                if ((mArray[ct] == 0) && (arrays != null)) {
-                    throw new RSInvalidStateException("Array dimensions must be contigous from 0.");
-                }
-            }
-
             long id = mRS.nTypeCreate(mElement.getID(mRS),
                                      mDimX, mDimY, mDimZ, mDimMipmaps, mDimFaces, mYuv);
             Type t = new Type(id, mRS);
@@ -476,7 +415,6 @@ public class Type extends BaseObj {
             t.mDimMipmaps = mDimMipmaps;
             t.mDimFaces = mDimFaces;
             t.mDimYuv = mYuv;
-            t.mArrays = arrays;
 
             t.calcElementCount();
             return t;
