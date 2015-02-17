@@ -155,7 +155,6 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
 
     private SettingsObserver mSettingsObserver;
     private boolean mShowWeather;
-    private int mShowBatteryText;
 
     private ContentObserver mObserver = new ContentObserver(new Handler()) {
         public void onChange(boolean selfChange, Uri uri) {

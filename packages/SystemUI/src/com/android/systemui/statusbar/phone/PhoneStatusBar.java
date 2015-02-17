@@ -512,6 +512,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     resolver, Settings.System.HEADS_UP_DISMISS_ON_REMOVE, 0) == 1;
             mHeadsUpTouchOutside = Settings.System.getInt(
                     resolver, Settings.System.HEADS_UP_TOUCH_OUTSIDE, 0) == 1;
+            loadShowBatteryTextSetting();
+            updateBatteryLevelText();
+            mBatteryLevel.setVisibility(mShowBatteryText ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -550,7 +553,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mNavigationBarView.setDisabledFlags(mDisabled);
         mNavigationBarView.setBar(this);
         addNavigationBar();
-        }
     }
 
     private void loadShowBatteryTextSetting() {

@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.database.ContentObserver;
 import android.graphics.Canvas;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
@@ -200,15 +199,6 @@ public class BatteryMeterView extends View implements DemoMode,
     public void updateBatteryIconSettings() {
         loadShowBatterySetting();
         postInvalidate();
-    };
-
-    private ContentObserver mObserver = new ContentObserver(new Handler()) {
-        public void onChange(boolean selfChange, Uri uri) {
-            mShowPercent = ENABLE_PERCENT && 1 == Settings.System.getInt(
-                    getContext().getContentResolver(),
-                    Settings.System.STATUS_BAR_SHOW_BATTERY_PERCENT, 0);
-            postInvalidate();
-        }
     };
 
     @Override
