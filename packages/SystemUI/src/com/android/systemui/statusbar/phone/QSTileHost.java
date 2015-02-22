@@ -32,13 +32,10 @@ import android.util.Log;
 import com.android.systemui.R;
 import com.android.systemui.qs.QSTile;
 import com.android.systemui.qs.tiles.AirplaneModeTile;
-import com.android.systemui.qs.tiles.ApnTile;
 import com.android.systemui.qs.tiles.BluetoothTile;
 import com.android.systemui.qs.tiles.CastTile;
 import com.android.systemui.qs.tiles.CellularTile;
 import com.android.systemui.qs.tiles.ColorInversionTile;
-import com.android.systemui.qs.tiles.DataTile;
-import com.android.systemui.qs.tiles.DdsTile;
 import com.android.systemui.qs.tiles.FlashlightTile;
 import com.android.systemui.qs.tiles.HotspotTile;
 import com.android.systemui.qs.tiles.ImmersiveTile;
@@ -273,15 +270,7 @@ public class QSTileHost implements QSTile.Host {
         else if (tileSpec.equals("cast")) return new CastTile(this);
         else if (tileSpec.equals("hotspot")) return new HotspotTile(this);
         else if (tileSpec.equals("notifications")) return new NotificationsTile(this);
-        else if (tileSpec.equals("data")
-                && mConnectivityManager.isNetworkSupported(ConnectivityManager.TYPE_MOBILE))
-            return new DataTile(this);
         else if (tileSpec.equals("roaming")) return new RoamingTile(this);
-        else if (tileSpec.equals("dds") && mTelephonyManager.isMultiSimEnabled()
-                && (mTelephonyManager.getMultiSimConfiguration()
-                == TelephonyManager.MultiSimVariants.DSDA))
-            return new DdsTile(this);
-        else if (tileSpec.equals("apn")) return new ApnTile(this);
         else if (tileSpec.equals("usb_tether")) return new UsbTetherTile(this);
         else if (tileSpec.equals("immersive")) return new ImmersiveTile(this);
         else if (tileSpec.startsWith(IntentTile.PREFIX)) return IntentTile.create(this,tileSpec);
