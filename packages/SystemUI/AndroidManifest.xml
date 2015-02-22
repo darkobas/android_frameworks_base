@@ -185,6 +185,13 @@
             </intent-filter>
         </receiver>
 
+	<receiver android:name=".qs.tiles.LocationTile$LocationChangedReceiver">
+    		<intent-filter>
+        		<action android:name="android.location.PROVIDERS_CHANGED" />
+        		<category android:name="android.intent.category.DEFAULT" />
+    		</intent-filter>
+	</receiver>
+
         <activity android:name=".usb.UsbStorageActivity"
                   android:label="@*android:string/usb_storage_activity_title"
                   android:excludeFromRecents="true">
