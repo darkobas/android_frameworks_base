@@ -64,4 +64,5 @@
     <string name="select_application">Select application</string>
     <string name="lockscreen_target_empty">Empty</string>
 
+    <string name="quick_settings_lte_tile_title">LTE</string>
 </resources>

@@ -16,6 +16,7 @@
 
 package com.android.systemui.qs;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.os.Handler;
@@ -23,10 +24,12 @@ import android.provider.Settings.Global;
 
 import com.android.systemui.statusbar.policy.Listenable;
 
-/** Helper for managing a global setting. **/
+/** Helper for managing a secure setting. **/
 public abstract class GlobalSetting extends ContentObserver implements Listenable {
     private final Context mContext;
     private final String mSettingName;
+
+    private boolean mListening;
 
     protected abstract void handleValueChanged(int value);
 
@@ -34,6 +37,7 @@ public abstract class GlobalSetting extends ContentObserver implements Listenabl
         super(handler);
         mContext = context;
         mSettingName = settingName;
+        setListening(true);
     }
 
     public int getValue() {
@@ -46,6 +50,7 @@ public abstract class GlobalSetting extends ContentObserver implements Listenabl
 
     @Override
     public void setListening(boolean listening) {
+        mListening = listening;
         if (listening) {
             mContext.getContentResolver().registerContentObserver(
                     Global.getUriFor(mSettingName), false, this);

@@ -25,6 +25,8 @@ import com.android.internal.telephony.Phone;
 
 import com.android.internal.util.cm.QSUtils;
 import com.android.systemui.qs.QSTile;
+import com.android.systemui.qs.UsageTracker;
+import com.android.systemui.qs.GlobalSetting;
 import com.android.systemui.R;
 
 /**
@@ -32,8 +34,39 @@ import com.android.systemui.R;
  * Created by Adnan on 1/21/15.
  */
 public class LteTile extends QSTile<QSTile.BooleanState> {
+    private static final Intent NETWORK_OPERATOR_SETTINGS = new Intent(Settings.ACTION_NETWORK_OPERATOR_SETTINGS);
+
+    private final UsageTracker mUsageTracker;
+    private final GlobalSetting mSetting;
+
+    private boolean mListening;
+
     public LteTile(Host host) {
         super(host);
+	
+	mSetting = new GlobalSetting(mContext, mHandler,
+                Settings.Global.PREFERRED_NETWORK_MODE) {
+            @Override
+            protected void handleValueChanged(int value) {
+                mUsageTracker.trackUsage();
+                if (mListening) {
+                    handleRefreshState(value);
+                }
+            }
+        };
+        mUsageTracker = new UsageTracker(host.getContext(), LteTile.class);
+        if (mSetting.getValue() != 0 && !mUsageTracker.isRecentlyUsed()) {
+            mUsageTracker.trackUsage();
+        }
+        mUsageTracker.setListening(true);
+        mSetting.setListening(true);
+    }
+
+    @Override
+    protected void handleDestroy() {
+        super.handleDestroy();
+        mUsageTracker.setListening(false);
+        mSetting.setListening(false);
     }
 
     @Override
@@ -64,6 +97,8 @@ public class LteTile extends QSTile<QSTile.BooleanState> {
             return;
         }
 
+        state.label = mContext.getString(R.string.quick_settings_lte_tile_title);
+
         switch (getCurrentPreferredNetworkMode()) {
             case Phone.NT_MODE_GLOBAL:
             case Phone.NT_MODE_LTE_CDMA_AND_EVDO:
@@ -73,11 +108,11 @@ public class LteTile extends QSTile<QSTile.BooleanState> {
             case Phone.NT_MODE_LTE_CDMA_EVDO_GSM_WCDMA:
             case Phone.NT_MODE_TD_SCDMA_GSM_WCDMA_LTE:
             case Phone.NT_MODE_TD_SCDMA_WCDMA_LTE:
-                state.visible = true;
+                state.visible = mUsageTracker.isRecentlyUsed();
                 state.iconId = R.drawable.ic_qs_lte_on;
                 break;
             default:
-                state.visible = true;
+                state.visible = mUsageTracker.isRecentlyUsed();
                 state.iconId = R.drawable.ic_qs_lte_off;
                 break;
         }
