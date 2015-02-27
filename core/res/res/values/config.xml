@@ -2114,7 +2114,7 @@
     <bool name="config_enableCpuBoostForScroller">false</bool>
 
     <!-- Wether doze feature is enabled by default in settings. -->
-    <bool name="config_doze_enabled_by_default">false</bool>
+    <bool name="config_doze_enabled_by_default">true</bool>
 
     <!-- Configuration to enable non-default PDP during IWLAN -->
     <bool name="config_feature_iwlan_enabled">false</bool>
