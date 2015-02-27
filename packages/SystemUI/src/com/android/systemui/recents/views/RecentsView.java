@@ -145,7 +145,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         }
     }
 
-    public void clearRecents() {
+    public void dismissAllTasksAnimated() {
         int childCount = getChildCount();
         for (int i = 0; i < childCount; i++) {
             View child = getChildAt(i);
@@ -372,7 +372,10 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         mClearRecents = ((View)getParent()).findViewById(R.id.clear_recents);
         mClearRecents.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                clearRecents();
+                if (mClearRecents.getAlpha() != 1f) {
+                    return;
+                }
+                dismissAllTasksAnimated();
             }
         });
     }
