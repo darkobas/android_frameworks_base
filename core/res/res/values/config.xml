@@ -1807,7 +1807,9 @@
     <string-array translatable="false" name="config_globalActionsList">
         <item>power</item>
         <item>reboot</item>
-        <item>bugreport</item>
+        <item>lockdown</item>
+        <item>airplane</item>
+        <item>silent</item>
         <item>users</item>
     </string-array>
 
