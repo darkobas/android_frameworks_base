@@ -1246,9 +1246,16 @@ public final class Settings {
 
             // At one time in System, then Global, but now back in Secure
             MOVED_TO_SECURE.add(Secure.INSTALL_NON_MARKET_APPS);
+
+            /* CM12 CHANGES */
+            MOVED_TO_SECURE.add(Secure.QS_SHOW_BRIGHTNESS_SLIDER);
             for (String s : Secure.NAVIGATION_RING_TARGETS) {
                 MOVED_TO_SECURE.add(s);
             }
+            MOVED_TO_SECURE.add(Secure.DEV_FORCE_SHOW_NAVBAR);
+            MOVED_TO_SECURE.add(Secure.KEYBOARD_BRIGHTNESS);
+            MOVED_TO_SECURE.add(Secure.BUTTON_BRIGHTNESS);
+            MOVED_TO_SECURE.add(Secure.BUTTON_BACKLIGHT_TIMEOUT);
         }
 
         private static final HashSet<String> MOVED_TO_GLOBAL;
@@ -2139,11 +2146,14 @@ public final class Settings {
          */
         public static final String LOCK_SCREEN_WEATHER_ICON_COLOR = "lock_screen_weather_icon_color";
 
-        /** Whether to show the brightness slider in quick settings panel.
-         *
+        /**
+         * Whether to show the brightness slider in quick settings panel.
+         * @deprecated Use {@link android.provider.Settings.Secure#QS_SHOW_BRIGHTNESS_SLIDER}
+         * instead
          * @hide
          */
-        public static final String QS_SHOW_BRIGHTNESS_SLIDER = "qs_show_brightness_slider";
+        @Deprecated
+        public static final String QS_SHOW_BRIGHTNESS_SLIDER = Secure.QS_SHOW_BRIGHTNESS_SLIDER;
 
         /**
          * Whether to control brightness from status bar
@@ -2185,24 +2195,30 @@ public final class Settings {
         /**
          * The keyboard brightness to be used while the screen is on.
          * Valid value range is between 0 and {@link PowerManager#getMaximumKeyboardBrightness()}
+         * @deprecated Use {@link android.provider.Settings.Secure#KEYBOARD_BRIGHTNESS} instead
          * @hide
          */
-        public static final String KEYBOARD_BRIGHTNESS = "keyboard_brightness";
-        /**
+        @Deprecated
+        public static final String KEYBOARD_BRIGHTNESS = Secure.KEYBOARD_BRIGHTNESS;
 
+        /**
          * The button brightness to be used while the screen is on or after a button press,
          * depending on the value of {@link BUTTON_BACKLIGHT_TIMEOUT}.
          * Valid value range is between 0 and {@link PowerManager#getMaximumButtonBrightness()}
+         * @deprecated Use {@link android.provider.Settings.Secure#BUTTON_BRIGHTNESS} instead
          * @hide
          */
-        public static final String BUTTON_BRIGHTNESS = "button_brightness";
+        @Deprecated
+        public static final String BUTTON_BRIGHTNESS = Secure.BUTTON_BRIGHTNESS;
 
         /**
          * The time in ms to keep the button backlight on after pressing a button.
          * A value of 0 will keep the buttons on for as long as the screen is on.
+         * @deprecated Use {@link android.provider.Settings.Secure#BUTTON_BACKLIGHT_TIMEOUT} instead
          * @hide
          */
-        public static final String BUTTON_BACKLIGHT_TIMEOUT = "button_backlight_timeout";
+        @Deprecated
+        public static final String BUTTON_BACKLIGHT_TIMEOUT = Secure.BUTTON_BACKLIGHT_TIMEOUT;
 
         /**
          * Defines the status and navigation bar color is battery safe mode is enabled.
@@ -2582,11 +2598,12 @@ public final class Settings {
         public static final String TIME_12_24 = "time_12_24";
 
         /**
-        * Developer options - Navigation Bar show switch
-        * @hide
-        */
-        public static final String DEV_FORCE_SHOW_NAVBAR = "dev_force_show_navbar";
-
+         * Developer options - Navigation Bar show switch
+         * @deprecated Use {@link android.provider.Settings.Secure#DEV_FORCE_SHOW_NAVBAR} instead
+         * @hide
+         */
+        @Deprecated
+        public static final String DEV_FORCE_SHOW_NAVBAR = Secure.DEV_FORCE_SHOW_NAVBAR;
 
         /**
          * Date format string
@@ -5820,6 +5837,12 @@ public final class Settings {
         public static final String SLEEP_TIMEOUT = "sleep_timeout";
 
         /**
+         * Whether to show the brightness slider in quick settings panel.
+         * @hide
+         */
+        public static final String QS_SHOW_BRIGHTNESS_SLIDER = "qs_show_brightness_slider";
+
+        /**
          * Whether to include options in power menu for rebooting into recovery or bootloader
          * @hide
          */
@@ -5873,6 +5896,34 @@ public final class Settings {
                 "navigation_ring_targets_1",
                 "navigation_ring_targets_2",
         };
+
+        /**
+         * Developer options - Navigation Bar show switch
+         * @hide
+         */
+        public static final String DEV_FORCE_SHOW_NAVBAR = "dev_force_show_navbar";
+
+        /**
+         * The keyboard brightness to be used while the screen is on.
+         * Valid value range is between 0 and {@link PowerManager#getMaximumKeyboardBrightness()}
+         * @hide
+         */
+        public static final String KEYBOARD_BRIGHTNESS = "keyboard_brightness";
+
+        /**
+         * The button brightness to be used while the screen is on or after a button press,
+         * depending on the value of {@link BUTTON_BACKLIGHT_TIMEOUT}.
+         * Valid value range is between 0 and {@link PowerManager#getMaximumButtonBrightness()}
+         * @hide
+         */
+        public static final String BUTTON_BRIGHTNESS = "button_brightness";
+
+        /**
+         * The time in ms to keep the button backlight on after pressing a button.
+         * A value of 0 will keep the buttons on for as long as the screen is on.
+         * @hide
+         */
+        public static final String BUTTON_BACKLIGHT_TIMEOUT = "button_backlight_timeout";
 
         /**
          * This are the settings to be backed up.
