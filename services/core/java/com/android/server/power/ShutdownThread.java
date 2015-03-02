@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
- * Copyright (C) 2013 The CyanogenMod Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +21,6 @@ import android.app.ActivityManagerNative;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.IActivityManager;
-import android.app.KeyguardManager;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.IBluetoothManager;
@@ -34,11 +32,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Handler;
-import android.os.Message;
 import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.ServiceManager;
@@ -49,27 +43,14 @@ import android.os.Vibrator;
 import android.os.SystemVibrator;
 import android.os.storage.IMountService;
 import android.os.storage.IMountShutdownObserver;
-import android.provider.Settings;
-import android.widget.ListView;
 
 import com.android.internal.telephony.ITelephony;
 import com.android.server.pm.PackageManagerService;
-import com.android.server.power.PowerManagerService;
+
 import android.util.Log;
-import android.view.IWindowManager;
-import android.view.KeyEvent;
 import android.view.WindowManager;
 import java.lang.reflect.Method;
 import dalvik.system.PathClassLoader;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.OutputStreamWriter;
-
-import java.lang.reflect.Method;
 
 public final class ShutdownThread extends Thread {
     // constants
@@ -79,8 +60,6 @@ public final class ShutdownThread extends Thread {
     private static final int MAX_BROADCAST_TIME = 10*1000;
     private static final int MAX_SHUTDOWN_WAIT_TIME = 20*1000;
     private static final int MAX_RADIO_WAIT_TIME = 12*1000;
-
-    private static final String SOFT_REBOOT = "soft_reboot";
 
     // length of vibration before shutting down
     private static final int SHUTDOWN_VIBRATE_MS = 500;
@@ -114,19 +93,8 @@ public final class ShutdownThread extends Thread {
     private PowerManager.WakeLock mCpuWakeLock;
     private PowerManager.WakeLock mScreenWakeLock;
     private Handler mHandler;
-    private static MediaPlayer mMediaPlayer;
-    private static final String OEM_BOOTANIMATION_FILE = "/oem/media/shutdownanimation.zip";
-    private static final String SYSTEM_BOOTANIMATION_FILE = "/system/media/shutdownanimation.zip";
-    private static final String SYSTEM_ENCRYPTED_BOOTANIMATION_FILE = "/system/media/shutdownanimation-encrypted.zip";
-
-    private static final String SHUTDOWN_MUSIC_FILE = "/system/media/shutdown.wav";
-    private static final String OEM_SHUTDOWN_MUSIC_FILE = "/oem/media/shutdown.wav";
-
-    private boolean isShutdownMusicPlaying = false;
 
     private static AlertDialog sConfirmDialog;
-
-    private static AudioManager mAudioManager;
     
     private ShutdownThread() {
     }
@@ -145,16 +113,6 @@ public final class ShutdownThread extends Thread {
         shutdownInner(context, confirm);
     }
 
-    private static boolean isAdvancedRebootPossible(final Context context) {
-        KeyguardManager km = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
-        boolean keyguardLocked = km.inKeyguardRestrictedInputMode() && km.isKeyguardSecure();
-        boolean advancedRebootEnabled = Settings.Secure.getInt(context.getContentResolver(),
-            Settings.Secure.ADVANCED_REBOOT, 0) == 1;
-        boolean isPrimaryUser = UserHandle.getCallingUserId() == UserHandle.USER_OWNER;
-
-        return advancedRebootEnabled && !keyguardLocked && isPrimaryUser;
-    }
-
     static void shutdownInner(final Context context, boolean confirm) {
         // ensure that only one thread is trying to power down.
         // any additional calls are just returned
@@ -165,126 +123,41 @@ public final class ShutdownThread extends Thread {
             }
         }
 
-        boolean showRebootOption = false;
-        String[] defaultActions = context.getResources().getStringArray(
-                com.android.internal.R.array.config_globalActionsList);
-        for (int i = 0; i < defaultActions.length; i++) {
-            if (defaultActions[i].equals("reboot")) {
-                showRebootOption = true;
-                break;
-            }
-        }
         final int longPressBehavior = context.getResources().getInteger(
                         com.android.internal.R.integer.config_longPressOnPowerBehavior);
-        int resourceId = mRebootSafeMode
+        final int resourceId = mRebootSafeMode
                 ? com.android.internal.R.string.reboot_safemode_confirm
                 : (longPressBehavior == 2
                         ? com.android.internal.R.string.shutdown_confirm_question
                         : com.android.internal.R.string.shutdown_confirm);
-        if (showRebootOption && !mRebootSafeMode) {
-            resourceId = com.android.internal.R.string.reboot_confirm;
-        }
-
-        final int titleResourceId = mRebootSafeMode
-                 ? com.android.internal.R.string.reboot_safemode_title
-                 : (mReboot
-                         ? com.android.internal.R.string.reboot_system
-                         : com.android.internal.R.string.power_off);
 
         Log.d(TAG, "Notifying thread to start shutdown longPressBehavior=" + longPressBehavior);
 
         if (confirm) {
             final CloseDialogReceiver closer = new CloseDialogReceiver(context);
-
             if (sConfirmDialog != null) {
                 sConfirmDialog.dismiss();
-                sConfirmDialog = null;
             }
-            if (mReboot && !mRebootSafeMode) {
-                // Determine if primary user is logged in
-                boolean isPrimary = UserHandle.getCallingUserId() == UserHandle.USER_OWNER;
-
-                // See if the advanced reboot menu is enabled
-                // (only if primary user) and check the keyguard state
-                int advancedReboot = isPrimary ? getAdvancedReboot(context) : 0;
-                KeyguardManager km = (KeyguardManager) context.getSystemService(
-                        Context.KEYGUARD_SERVICE);
-                boolean locked = km.inKeyguardRestrictedInputMode() && km.isKeyguardSecure();
-
-                if ((advancedReboot == 1 && !locked) || advancedReboot == 2) {
-                    // Include options in power menu for rebooting into recovery or bootloader
-                    sConfirmDialog = new AlertDialog.Builder(context, AlertDialog.THEME_MATERIAL_DARK)
-                            .setTitle(titleResourceId)
-                            .setItems(
-                                    com.android.internal.R.array.shutdown_reboot_options,
-                                    new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    if (which < 0)
-                                        return;
-
-                                    String actions[] = context.getResources().getStringArray(
-                                            com.android.internal.R.array.shutdown_reboot_actions);
-
-                                    if (actions != null && which < actions.length)
-                                        mRebootReason = actions[which];
-
-                                    mReboot = true;
-                                    beginShutdownSequence(context);
-                                }
-                            })
-                            .create();
-                            sConfirmDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-                                public boolean onKey (DialogInterface dialog, int keyCode,
-                                        KeyEvent event) {
-                                    if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                        mReboot = false;
-                                        dialog.cancel();
-                                    }
-                                    return true;
-                                }
-                            });
-                }
-            }
-
-            if (sConfirmDialog == null) {
-                sConfirmDialog = new AlertDialog.Builder(context, AlertDialog.THEME_MATERIAL_DARK)
-                        .setTitle(titleResourceId)
-                        .setMessage(resourceId)
-                        .setPositiveButton(com.android.internal.R.string.yes,
-                                new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                beginShutdownSequence(context);
-                            }
-                        })
-                        .setNegativeButton(com.android.internal.R.string.no, null)
-                        .create();
-            }
-
+            sConfirmDialog = new AlertDialog.Builder(context)
+                    .setTitle(mRebootSafeMode
+                            ? com.android.internal.R.string.reboot_safemode_title
+                            : com.android.internal.R.string.power_off)
+                    .setMessage(resourceId)
+                    .setPositiveButton(com.android.internal.R.string.yes,
+                            new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            beginShutdownSequence(context);
+                        }
+                    })
+                    .setNegativeButton(com.android.internal.R.string.no, null)
+                    .create();
             closer.dialog = sConfirmDialog;
             sConfirmDialog.setOnDismissListener(closer);
             sConfirmDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
             sConfirmDialog.show();
-
         } else {
             beginShutdownSequence(context);
         }
-    }
-
-    private static void doSoftReboot() {
-        try {
-            final IActivityManager am =
-                  ActivityManagerNative.asInterface(ServiceManager.checkService("activity"));
-            if (am != null) {
-                am.restart();
-            }
-        } catch (RemoteException e) {
-            Log.e(TAG, "failure trying to perform soft reboot", e);
-        }
-    }
-
-    private static int getAdvancedReboot(Context context) {
-        return Settings.Secure.getInt(context.getContentResolver(),
-                Settings.Secure.ADVANCED_REBOOT, 0);
     }
 
     private static class CloseDialogReceiver extends BroadcastReceiver
@@ -324,27 +197,6 @@ public final class ShutdownThread extends Thread {
         shutdownInner(context, confirm);
     }
 
-    private static String getShutdownMusicFilePath() {
-        final String[] fileName = {OEM_SHUTDOWN_MUSIC_FILE, SHUTDOWN_MUSIC_FILE};
-        File checkFile = null;
-        for(String music : fileName) {
-            checkFile = new File(music);
-            if (checkFile.exists()) {
-                return music;
-            }
-        }
-        return null;
-    }
-
-    private static void lockDevice() {
-        IWindowManager wm = IWindowManager.Stub.asInterface(ServiceManager
-                .getService(Context.WINDOW_SERVICE));
-        try {
-            wm.updateRotation(false, false);
-        } catch (RemoteException e) {
-            Log.w(TAG, "boot animation can not lock device!");
-        }
-    }
     /**
      * Request a reboot into safe mode.  Must be called from a Looper thread in which its UI
      * is shown.
@@ -368,28 +220,16 @@ public final class ShutdownThread extends Thread {
             sIsStarted = true;
         }
 
-        //acquire audio focus to make the other apps to stop playing muisc
-        mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        mAudioManager.requestAudioFocus(null,
-                AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        // throw up an indeterminate system dialog to indicate radio is
+        // shutting down.
+        ProgressDialog pd = new ProgressDialog(context);
+        pd.setTitle(context.getText(com.android.internal.R.string.power_off));
+        pd.setMessage(context.getText(com.android.internal.R.string.shutdown_progress));
+        pd.setIndeterminate(true);
+        pd.setCancelable(false);
+        pd.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
 
-        if (!checkAnimationFileExist()) {
-            // throw up an indeterminate system dialog to indicate radio is
-            // shutting down.
-            ProgressDialog pd = new ProgressDialog(context, com.android.internal.R.style.Theme_Material_Dialog_Alert_Dark);
-            if (mReboot) {
-                pd.setTitle(context.getText(com.android.internal.R.string.reboot_system));
-                pd.setMessage(context.getText(com.android.internal.R.string.reboot_progress));
-            } else {
-                pd.setTitle(context.getText(com.android.internal.R.string.power_off));
-                pd.setMessage(context.getText(com.android.internal.R.string.shutdown_progress));
-            }
-            pd.setIndeterminate(true);
-            pd.setCancelable(false);
-            pd.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
-
-            pd.show();
-        }
+        pd.show();
 
         sInstance.mContext = context;
         sInstance.mPowerManager = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
@@ -506,40 +346,6 @@ public final class ShutdownThread extends Thread {
             pm.shutdown();
         }
 
-        String shutDownFile = null;
-
-        //showShutdownAnimation() is called from here to sync
-        //music and animation properly
-        if(checkAnimationFileExist()) {
-            lockDevice();
-            showShutdownAnimation();
-
-            if (!isSilentMode()
-                    && (shutDownFile = getShutdownMusicFilePath()) != null) {
-                isShutdownMusicPlaying = true;
-                shutdownMusicHandler.obtainMessage(0, shutDownFile).sendToTarget();
-            }
-        }
-
-        Log.i(TAG, "wait for shutdown music");
-        final long endTimeForMusic = SystemClock.elapsedRealtime() + MAX_BROADCAST_TIME;
-        synchronized (mActionDoneSync) {
-            while (isShutdownMusicPlaying) {
-                long delay = endTimeForMusic - SystemClock.elapsedRealtime();
-                if (delay <= 0) {
-                    Log.w(TAG, "play shutdown music timeout!");
-                    break;
-                }
-                try {
-                    mActionDoneSync.wait(delay);
-                } catch (InterruptedException e) {
-                }
-            }
-            if (!isShutdownMusicPlaying) {
-                Log.i(TAG, "play shutdown music complete.");
-            }
-        }
-
         // Shutdown radios.
         shutdownRadios(MAX_RADIO_WAIT_TIME);
 
@@ -601,10 +407,11 @@ public final class ShutdownThread extends Thread {
                         ITelephony.Stub.asInterface(ServiceManager.checkService("phone"));
                 final IBluetoothManager bluetooth =
                         IBluetoothManager.Stub.asInterface(ServiceManager.checkService(
-                        BluetoothAdapter.BLUETOOTH_MANAGER_SERVICE));
+                                BluetoothAdapter.BLUETOOTH_MANAGER_SERVICE));
 
                 try {
-                    nfcOff = nfc == null || nfc.getState() == NfcAdapter.STATE_OFF;
+                    nfcOff = nfc == null ||
+                             nfc.getState() == NfcAdapter.STATE_OFF;
                     if (!nfcOff) {
                         Log.w(TAG, "Turning off NFC...");
                         nfc.disable(false); // Don't persist new state
@@ -729,78 +536,26 @@ public final class ShutdownThread extends Thread {
     }
 
     private static void deviceRebootOrShutdown(boolean reboot, String reason) {
-        Class<?> cl;
-        PathClassLoader oemClassLoader = new PathClassLoader("/system/framework/oem-services.jar",
-            ClassLoader.getSystemClassLoader());
-        String deviceShutdownClassName = "com.qti.server.power.ShutdownOem";
-        try{
-            cl = Class.forName(deviceShutdownClassName);
-            Method m;
-            try {
-                m = cl.getMethod("rebootOrShutdown", new Class[] {boolean.class, String.class});
-                m.invoke(cl.newInstance(), reboot, reason);
-            } catch (NoSuchMethodException ex) {
-                Log.e(TAG, "rebootOrShutdown method not found in class "
-                        + deviceShutdownClassName);
-            } catch (Exception ex) {
-                Log.e(TAG, "Unknown exception hit while trying to invoke rebootOrShutdown");
-            }
-        } catch(ClassNotFoundException e) {
-            Log.e(TAG, "Unable to find class " + deviceShutdownClassName);
-        } catch (Exception e) {
-            Log.e(TAG, "Unknown exception while trying to invoke rebootOrShutdown");
-        }
+       Class<?> cl;
+       PathClassLoader oemClassLoader = new PathClassLoader("/system/framework/oem-services.jar",
+                       ClassLoader.getSystemClassLoader());
+       String deviceShutdownClassName = "com.qti.server.power.ShutdownOem";
+       try{
+               cl = Class.forName(deviceShutdownClassName);
+               Method m;
+                       try {
+                               m = cl.getMethod("rebootOrShutdown", new Class[] {boolean.class, String.class});
+                               m.invoke(cl.newInstance(), reboot, reason);
+                       } catch (NoSuchMethodException ex) {
+                               Log.e(TAG, "rebootOrShutdown method not found in class " + deviceShutdownClassName);
+                       } catch (Exception ex) {
+                               Log.e(TAG, "Unknown exception hit while trying to invode rebootOrShutdown");
+                       }
+       } catch(ClassNotFoundException e) {
+               Log.e(TAG, "Unable to find class " + deviceShutdownClassName);
+       } catch (Exception e) {
+               Log.e(TAG, "Unknown exception while trying to invoke rebootOrShutdown");
+       }
     }
-
-    private static boolean checkAnimationFileExist() {
-        if (new File(OEM_BOOTANIMATION_FILE).exists()
-                || new File(SYSTEM_BOOTANIMATION_FILE).exists()
-                || new File(SYSTEM_ENCRYPTED_BOOTANIMATION_FILE).exists())
-            return true;
-        else
-            return false;
-    }
-
-    private static boolean isSilentMode() {
-        return mAudioManager.isSilentMode();
-    }
-
-    private static void showShutdownAnimation() {
-        /*
-         * When boot completed, "service.bootanim.exit" property is set to 1.
-         * Bootanimation checks this property to stop showing the boot animation.
-         * Since we use the same code for shutdown animation, we
-         * need to reset this property to 0. If this is not set to 0 then shutdown
-         * will stop and exit after displaying the first frame of the animation
-         */
-        SystemProperties.set("service.bootanim.exit", "0");
-
-        SystemProperties.set("ctl.start", "bootanim");
-    }
-
-    private Handler shutdownMusicHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            String path = (String) msg.obj;
-            mMediaPlayer = new MediaPlayer();
-            try
-            {
-                mMediaPlayer.reset();
-                mMediaPlayer.setDataSource(path);
-                mMediaPlayer.prepare();
-                mMediaPlayer.start();
-                mMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        synchronized (mActionDoneSync) {
-                            isShutdownMusicPlaying = false;
-                            mActionDoneSync.notifyAll();
-                        }
-                    }
-                });
-            } catch (IOException e) {
-                Log.d(TAG, "play shutdown music error:" + e);
-            }
-        }
-    };
 }
+

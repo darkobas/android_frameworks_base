@@ -1,30 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
-  <!-- Themes and styles -->
-  <java-symbol type="style" name="Theme.Material.Dialog.Dark" />
-  <java-symbol type="style" name="Theme.Material.Dialog.Alert.Dark" />
-  <java-symbol type="style" name="TextAppearance.Material.Large.Dark" />
-  <java-symbol type="style" name="TextAppearance.Material.Small.Dark" />
-  <java-symbol type="drawable" name="item_background_borderless_material_dark" />
-  <java-symbol type="drawable" name="btn_borderless_material_dark" />
-  <java-symbol type="drawable" name="material_bg_blue_grey" />
-  <java-symbol type="color" name="material_blue_grey" />
-
-  <!-- Config Power Menu -->
-  <java-symbol type="id" name="option1_icon" />
-  <java-symbol type="id" name="option2_icon" />
-  <java-symbol type="id" name="option3_icon" />
-  <java-symbol type="drawable" name="ic_lock_reboot" />
-  <java-symbol type="drawable" name="ic_lock_settings" />
-  <java-symbol type="color" name="global_actions_icon_color_normal" />
-  <java-symbol type="color" name="global_actions_icon_color_selected" />
-  <java-symbol type="color" name="global_actions_icon_color_enabled" />
-
-  <!-- Config Power Menu -->
-  <java-symbol type="drawable" name="ic_lock_screen_record" />
-  <java-symbol type="string" name="global_action_screen_record" />
-  <java-symbol type="bool" name="config_enableScreenrecordChord" />
   <!-- Blur effects -->
   <java-symbol type="bool" name="config_ui_blur_enabled" />
   <java-symbol type="id" name="hide_lock_to_app_checkbox" />
@@ -32,26 +8,29 @@
   <java-symbol type="string" name="storage_usb" />
   <java-symbol type="string" name="storage_uicc" />
   <java-symbol type="bool" name="config_batterySdCardAccessibility" />
+  <!-- External media format -->
+  <java-symbol type="string" name="usb_extmedia_format_message" />
+  <java-symbol type="string" name="sd_extmedia_format_message" />
 
-    <!-- External media format -->
-    <java-symbol type="string" name="usb_extmedia_format_message" />
-    <java-symbol type="string" name="sd_extmedia_format_message" />
+  <!-- Strings for ExternalStorageFormatter service (SD card). -->
+  <java-symbol type="string" name="sd_progress_unmounting" />
+  <java-symbol type="string" name="sd_progress_erasing" />
+  <java-symbol type="string" name="sd_format_error" />
+  <java-symbol type="string" name="sd_media_bad_removal" />
+  <java-symbol type="string" name="sd_media_checking" />
+  <java-symbol type="string" name="sd_media_removed" />
+  <java-symbol type="string" name="sd_media_shared" />
 
-    <!-- Strings for ExternalStorageFormatter service (SD card). -->
-    <java-symbol type="string" name="sd_progress_unmounting" />
-    <java-symbol type="string" name="sd_progress_erasing" />
-    <java-symbol type="string" name="sd_format_error" />
-    <java-symbol type="string" name="sd_media_bad_removal" />
-    <java-symbol type="string" name="sd_media_checking" />
-    <java-symbol type="string" name="sd_media_removed" />
-    <java-symbol type="string" name="sd_media_shared" />
-
-    <!-- Strings for ExternalStorageFormatter service (USB storage). -->
-    <java-symbol type="string" name="usb_progress_unmounting" />
-    <java-symbol type="string" name="usb_progress_erasing" />
-    <java-symbol type="string" name="usb_format_error" />
-    <java-symbol type="string" name="usb_media_bad_removal" />
-    <java-symbol type="string" name="usb_media_checking" />
-    <java-symbol type="string" name="usb_media_removed" />
-    <java-symbol type="string" name="usb_media_shared" />
+  <!-- Strings for ExternalStorageFormatter service (USB storage). -->
+  <java-symbol type="string" name="usb_progress_unmounting" />
+  <java-symbol type="string" name="usb_progress_erasing" />
+  <java-symbol type="string" name="usb_format_error" />
+  <java-symbol type="string" name="usb_media_bad_removal" />
+  <java-symbol type="string" name="usb_media_checking" />
+  <java-symbol type="string" name="usb_media_removed" />
+  <java-symbol type="string" name="usb_media_shared" />
+  <!-- Config Power Menu -->
+  <java-symbol type="drawable" name="ic_lock_screen_record" />
+  <java-symbol type="string" name="global_action_screen_record" />
+  <java-symbol type="bool" name="config_enableScreenrecordChord" />
 </resources>
