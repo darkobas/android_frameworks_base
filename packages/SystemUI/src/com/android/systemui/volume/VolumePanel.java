@@ -825,9 +825,9 @@ public class VolumePanel extends Handler {
 
     private void updateSliderProgress(StreamControl sc, int progress) {
         final boolean isRinger = isNotificationOrRing(sc.streamType);
-        if (isRinger && mAudioManager.getRingerMode() == AudioManager.RINGER_MODE_SILENT) {
-            progress = mLastRingerProgress;
-        }
+        //if (isRinger && mAudioManager.getRingerMode() == AudioManager.RINGER_MODE_SILENT) {
+        //    progress = mLastRingerProgress;
+        //}
         if (progress < 0) {
             progress = getStreamVolume(sc.streamType);
         }
@@ -1005,7 +1005,7 @@ public class VolumePanel extends Handler {
     }
 
     private void updateZenPanelVisible() {
-        setZenPanelVisible(mZenModeAvailable && isNotificationOrRing(mActiveStreamType));
+        setZenPanelVisible(mZenModeAvailable /*&& isNotificationOrRing(mActiveStreamType)*/);
     }
 
     public void postVolumeChanged(int streamType, int flags) {

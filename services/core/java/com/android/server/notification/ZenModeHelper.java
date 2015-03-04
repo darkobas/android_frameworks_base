@@ -76,6 +76,7 @@ public class ZenModeHelper {
     private ZenModeConfig mConfig;
     private AudioManager mAudioManager;
     private int mPreviousRingerMode = -1;
+    private int mPreviousZenMode = -1;
 
     public ZenModeHelper(Context context, Handler handler) {
         mContext = context;
@@ -251,19 +252,20 @@ public class ZenModeHelper {
                     if (DEBUG) Slog.d(TAG, "Silencing ringer");
                     forcedRingerMode = AudioManager.RINGER_MODE_SILENT;
                 }
-            } else {
-                /*if (ringerMode == AudioManager.RINGER_MODE_SILENT) {
+            } else if (mPreviousZenMode != -1 && mPreviousZenMode == Global.ZEN_MODE_NO_INTERRUPTIONS) {
+                // when coming back from no interruption set back ringer
+                if (ringerMode == AudioManager.RINGER_MODE_SILENT) {
                     if (DEBUG) Slog.d(TAG, "Unsilencing ringer");
                     forcedRingerMode = mPreviousRingerMode != -1 ? mPreviousRingerMode
                             : AudioManager.RINGER_MODE_NORMAL;
-                    mPreviousRingerMode = -1;
-                }*/
+                }
             }
             if (forcedRingerMode != -1) {
                 mAudioManager.setRingerMode(forcedRingerMode, false /*checkZen*/);
                 ZenLog.traceSetRingerMode(forcedRingerMode);
             }
         }
+        mPreviousZenMode = mZenMode;
         dispatchOnZenModeChanged();
     }
 
