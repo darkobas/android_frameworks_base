@@ -285,7 +285,6 @@ public class PhoneStatusBarPolicy {
         }
 
         if (audioManager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE) {
-                audioManager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE) {
             volumeVisible = true;
             volumeIconId = R.drawable.stat_sys_ringer_vibrate;
             volumeDescription = mContext.getString(R.string.accessibility_ringer_vibrate);
