@@ -144,7 +144,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private String[] mMenuActions;
     private boolean mRebootMenu;
     private boolean mUserMenu;
-    private boolean mVoiceCapable;
 
     /**
      * @param context everything needs a context :(
@@ -172,7 +171,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         TelephonyManager telephonyManager =
                 (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         telephonyManager.listen(mPhoneStateListener, PhoneStateListener.LISTEN_SERVICE_STATE);
-        mVoiceCapable = telephonyManager.isVoiceCapable();
         mContext.getContentResolver().registerContentObserver(
                 Settings.Global.getUriFor(Settings.Global.AIRPLANE_MODE_ON), true,
                 mAirplaneModeObserver);
@@ -180,7 +178,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         mHasVibrator = vibrator != null && vibrator.hasVibrator();
 
         // TODO check zen mode?
-        mShowSilentToggle = mVoiceCapable && !mContext.getResources().getBoolean(
+        mShowSilentToggle = !mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_useFixedVolume);
         mShowScreenRecord = mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_enableScreenrecordChord);
