@@ -252,12 +252,12 @@ public class ZenModeHelper {
                     forcedRingerMode = AudioManager.RINGER_MODE_SILENT;
                 }
             } else {
-                if (ringerMode == AudioManager.RINGER_MODE_SILENT) {
+                /*if (ringerMode == AudioManager.RINGER_MODE_SILENT) {
                     if (DEBUG) Slog.d(TAG, "Unsilencing ringer");
                     forcedRingerMode = mPreviousRingerMode != -1 ? mPreviousRingerMode
                             : AudioManager.RINGER_MODE_NORMAL;
                     mPreviousRingerMode = -1;
-                }
+                }*/
             }
             if (forcedRingerMode != -1) {
                 mAudioManager.setRingerMode(forcedRingerMode, false /*checkZen*/);
@@ -308,11 +308,12 @@ public class ZenModeHelper {
             // follow ringer mode if necessary
             final int ringerMode = mAudioManager.getRingerMode();
             int newZen = -1;
-            if (ringerMode == AudioManager.RINGER_MODE_SILENT) {
+            /* if (ringerMode == AudioManager.RINGER_MODE_SILENT) {
                 if (mZenMode == Global.ZEN_MODE_OFF) {
                     newZen = Global.ZEN_MODE_IMPORTANT_INTERRUPTIONS;
                 }
-            } else if ((ringerMode == AudioManager.RINGER_MODE_NORMAL
+            } else */
+            if ((ringerMode == AudioManager.RINGER_MODE_NORMAL
                     || ringerMode == AudioManager.RINGER_MODE_VIBRATE)
                     && mZenMode != Global.ZEN_MODE_OFF) {
                 newZen = Global.ZEN_MODE_OFF;

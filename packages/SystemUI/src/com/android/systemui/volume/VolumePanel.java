@@ -737,6 +737,9 @@ public class VolumePanel extends Handler {
         if (mAudioManager.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
             mAudioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
             postVolumeChanged(sc.streamType, AudioManager.FLAG_SHOW_UI | AudioManager.FLAG_VIBRATE);
+        } else if (mAudioManager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE){
+            mAudioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+            postVolumeChanged(sc.streamType, AudioManager.FLAG_PLAY_SOUND);
         } else {
             mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
             postVolumeChanged(sc.streamType, AudioManager.FLAG_PLAY_SOUND);
@@ -908,10 +911,22 @@ public class VolumePanel extends Handler {
             // the state of the phone.
             sc.seekbarView.setEnabled(!fixedVolume);
         } else if (isRinger && mAudioManager.getRingerMode() == AudioManager.RINGER_MODE_SILENT) {
+            sc.icon.setImageResource(com.android.systemui.R.drawable.ic_ringer_mute);
             sc.seekbarView.setEnabled(false);
-            sc.icon.setEnabled(false);
             sc.icon.setAlpha(mDisabledAlpha);
-            sc.icon.setClickable(false);
+        } else if (!mVolumeLinkNotification && sc.streamType == AudioManager.STREAM_NOTIFICATION) {
+            if (mAudioManager.getRingerMode() == AudioManager.RINGER_MODE_SILENT) {
+                sc.icon.setImageResource(com.android.systemui.R.drawable.ic_notification_mute);
+                sc.seekbarView.setEnabled(false);
+                sc.icon.setAlpha(mDisabledAlpha);
+            } else if (mAudioManager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE) {
+                sc.icon.setImageResource(com.android.systemui.R.drawable.ic_ringer_vibrate);
+                sc.seekbarView.setEnabled(false);
+                sc.icon.setAlpha(1f);
+            } else {
+                sc.seekbarView.setEnabled(true);
+                sc.icon.setAlpha(1f);
+            }
         } else if (fixedVolume ||
                 (sc.streamType != mAudioManager.getMasterStreamType() && muted) ||
                 (sSafetyWarning != null)) {
@@ -922,14 +937,12 @@ public class VolumePanel extends Handler {
             }
         } else {
             sc.seekbarView.setEnabled(true);
-            sc.icon.setEnabled(true);
             sc.icon.setAlpha(1f);
         }
         // show the silent hint when the disabled slider is touched in silent mode
         if (isRinger && wasEnabled != sc.seekbarView.isEnabled()) {
             if (sc.seekbarView.isEnabled()) {
                 sc.group.setOnTouchListener(null);
-                sc.icon.setClickable(true);
             } else {
                 final View.OnTouchListener showHintOnTouch = new View.OnTouchListener() {
                     @Override
@@ -1145,7 +1158,6 @@ public class VolumePanel extends Handler {
         switch (streamType) {
 
             case AudioManager.STREAM_RING: {
-//                setRingerIcon();
                 Uri ringuri = RingtoneManager.getActualDefaultRingtoneUri(
                         mContext, RingtoneManager.TYPE_RINGTONE);
                 if (ringuri == null) {
