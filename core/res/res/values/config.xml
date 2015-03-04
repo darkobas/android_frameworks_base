@@ -1810,6 +1810,7 @@
         <item>reboot</item>
         <item>airplane</item>
         <item>silent</item>
+        <item>record</item>
     </string-array>
 
     <!-- default telephony hardware configuration for this platform.

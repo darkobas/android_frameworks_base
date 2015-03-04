@@ -117,6 +117,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private static final String GLOBAL_ACTION_KEY_REBOOT = "reboot";
     private static final String GLOBAL_ACTION_KEY_REBOOT_RECOVERY = "reboot_recovery";
     private static final String GLOBAL_ACTION_KEY_REBOOT_BOOTLOADER = "reboot_bootloader";
+    private static final String GLOBAL_ACTION_KEY_SCREENRECORD = "record";
 
     private final Context mContext;
     private final WindowManagerFuncs mWindowManagerFuncs;
@@ -127,6 +128,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private GlobalActionsDialog mDialog;
 
     private Action mSilentModeAction;
+    private SinglePressAction mScreenRecordAction;
     private ToggleAction mAirplaneModeOn;
 
     private MyAdapter mAdapter;
@@ -180,10 +182,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         // TODO check zen mode?
         mShowSilentToggle = mVoiceCapable && !mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_useFixedVolume);
-        mMenuActions = mContext.getResources().getStringArray(
-                com.android.internal.R.array.config_globalActionsList);
         mShowScreenRecord = mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_enableScreenrecordChord);
+        mMenuActions = mContext.getResources().getStringArray(
+                com.android.internal.R.array.config_globalActionsList);
     }
 
     /**
@@ -287,12 +289,12 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
             @Override
             public boolean showDuringKeyguard() {
-                return true;
+                return false;
             }
 
             @Override
             public boolean showDuringRestrictedKeyguard() {
-                return true;
+                return false;
             }
 
             @Override
@@ -307,12 +309,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         };
         onAirplaneModeChanged();
 
+        mItems = new ArrayList<Action>();
         // next: screen record, if enabled
         if (mShowScreenRecord) {
-            try {
-                if (Settings.System.getInt(mContext.getContentResolver(),
-                        Settings.System.POWER_MENU_SCREENRECORD_ENABLED, 0) != 0) {
-                    mItems.add(
+	    mScreenRecordAction =
                         new SinglePressAction(com.android.internal.R.drawable.ic_lock_screen_record,
                                 R.string.global_action_screen_record) {
 
@@ -339,12 +339,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                             public boolean showForCurrentUser() {
                             return true;
                             }
-                        });
+                        };
                 }
-            } catch (NullPointerException e) {
-              // Do nothing
-            }
-        }
 
         buildMenuList();
 
@@ -416,6 +412,11 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 mItems.add(getSettingsAction());
             } else if (GLOBAL_ACTION_KEY_LOCKDOWN.equals(actionKey)) {
                 mItems.add(getLockdownAction());
+            } else if (GLOBAL_ACTION_KEY_SCREENRECORD.equals(actionKey)) {
+                if (Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.POWER_MENU_SCREENRECORD_ENABLED, 0) != 0) {
+			mItems.add(mScreenRecordAction);
+		    }
             } else {
                 Log.e(TAG, "Invalid global action key " + actionKey);
             }
