@@ -29,6 +29,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.UserHandle;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.AttributeSet;
@@ -181,14 +182,15 @@ public class NotificationPanelView extends PanelView implements
     private SettingsObserver mSettingsObserver;
 
     private boolean mOneFingerQuickSettingsIntercept;
+    private boolean mStatusBarLockedOnSecureKeyguard;
     private boolean mDoubleTapToSleepEnabled;
     private int mStatusBarHeaderHeight;
     private GestureDetector mDoubleTapGesture;
 
     public NotificationPanelView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mLockPatternUtils = new LockPatternUtils(mContext);
         mSettingsObserver = new SettingsObserver(mHandler);
+        mLockPatternUtils = new LockPatternUtils(mContext);
         mDoubleTapGesture = new GestureDetector(mContext, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onDoubleTap(MotionEvent e) {
@@ -626,7 +628,8 @@ public class NotificationPanelView extends PanelView implements
             return true;
         }
 
-        boolean isQSEventBlocked = mLockPatternUtils.isSecure() && mKeyguardShowing;
+        boolean isQSEventBlocked = mLockPatternUtils.isSecure()
+                && mStatusBarLockedOnSecureKeyguard && mKeyguardShowing;
 
         if (event.getActionMasked() == MotionEvent.ACTION_DOWN && getExpandedFraction() == 1f
                 && mStatusBar.getBarState() != StatusBarState.KEYGUARD && !mQsExpanded
@@ -1913,6 +1916,9 @@ public class NotificationPanelView extends PanelView implements
                     Settings.System.STATUS_BAR_QUICK_QS_PULLDOWN), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.DOUBLE_TAP_SLEEP_GESTURE), false, this);
+            resolver.registerContentObserver(Settings.Secure.getUriFor(
+                    Settings.Secure.STATUS_BAR_LOCKED_ON_SECURE_KEYGUARD),
+                    false, this, UserHandle.USER_ALL);
             update();
         }
 
@@ -1937,6 +1943,9 @@ public class NotificationPanelView extends PanelView implements
                     resolver, Settings.System.STATUS_BAR_QUICK_QS_PULLDOWN, 1) == 1;
             mDoubleTapToSleepEnabled = Settings.System.getInt(
                     resolver, Settings.System.DOUBLE_TAP_SLEEP_GESTURE, 1) == 1;
+            mStatusBarLockedOnSecureKeyguard = Settings.Secure.getIntForUser(
+                    resolver, Settings.Secure.STATUS_BAR_LOCKED_ON_SECURE_KEYGUARD, 1,
+                    UserHandle.USER_CURRENT) == 1;
         }
     }
 }
