@@ -160,12 +160,8 @@ public class VisualizerTile extends QSTile<QSTile.State>
         mListening = listening;
         if (listening) {
             mMediaSessionManager.addOnActiveSessionsChangedListener(this, null);
-            if (mTileVisible) {
-                AsyncTask.execute(mLinkVisualizer);
-            }
         } else {
             mMediaSessionManager.removeOnActiveSessionsChangedListener(this);
-            AsyncTask.execute(mUnlinkVisualizer);
         }
     }
 
@@ -201,7 +197,6 @@ public class VisualizerTile extends QSTile<QSTile.State>
         }
         if (anythingPlaying != mTileVisible) {
             mTileVisible = anythingPlaying;
-            refreshState();
 	}
         if (anythingPlaying != mIsAnythingPlaying) {
             mIsAnythingPlaying = anythingPlaying;
