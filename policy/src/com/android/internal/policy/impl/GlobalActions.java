@@ -792,7 +792,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
                         @Override
                         public boolean showDuringRestrictedKeyguard() {
-                            return true;
+                            return false;
                         }
 
                         @Override
@@ -1312,7 +1312,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         @Override
         public boolean showDuringRestrictedKeyguard() {
-            return true;
+            return false;
         }
 
         @Override
