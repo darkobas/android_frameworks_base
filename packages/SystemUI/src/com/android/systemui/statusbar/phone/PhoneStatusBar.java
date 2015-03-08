@@ -62,7 +62,6 @@ import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
-import android.graphics.Xfermode;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.inputmethodservice.InputMethodService;
@@ -104,14 +103,12 @@ import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.view.WindowManagerGlobal;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewPropertyAnimator;
 import android.view.ViewStub;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
@@ -131,7 +128,6 @@ import com.android.internal.util.cm.WeatherControllerImpl;
 import com.android.keyguard.KeyguardHostView.OnDismissAction;
 import com.android.keyguard.ViewMediatorCallback;
 import com.android.systemui.BatteryMeterView;
-import com.android.systemui.BatteryMeterView.BatteryMeterMode;
 import com.android.systemui.DemoMode;
 import com.android.systemui.EventLogTags;
 import com.android.systemui.FontSizeUtils;
@@ -141,7 +137,6 @@ import com.android.systemui.doze.DozeHost;
 import com.android.systemui.doze.DozeLog;
 import com.android.systemui.keyguard.KeyguardViewMediator;
 import com.android.systemui.qs.QSPanel;
-import com.android.systemui.settings.BrightnessController;
 import com.android.systemui.statusbar.ActivatableNotificationView;
 import com.android.systemui.statusbar.BackDropView;
 import com.android.systemui.statusbar.BaseStatusBar;
@@ -1194,7 +1189,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 (ViewStub) mStatusBarWindow.findViewById(R.id.keyguard_user_switcher),
                 mKeyguardStatusBar, mNotificationPanel, mUserSwitcherController);
 
-
         // Set up the quick settings tile panel
         mQSPanel = (QSPanel) mStatusBarWindow.findViewById(R.id.quick_settings_panel);
         if (mQSPanel != null) {
@@ -1223,6 +1217,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     mQSPanel.setTiles(qsh.getTiles());
                 }
             });
+        }
+
+        if (mStatusBarWindowManager != null) {
+            mStatusBarWindowManager.setKeyguardMonitor(mKeyguardMonitor);
         }
 
         // User info. Trigger first load.
@@ -3533,7 +3531,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     private void addStatusBarWindow() {
         makeStatusBarView();
-        mStatusBarWindowManager = new StatusBarWindowManager(mContext, mKeyguardMonitor);
+        mStatusBarWindowManager = new StatusBarWindowManager(mContext);
+        mStatusBarWindowManager.setKeyguardMonitor(mKeyguardMonitor);
         mStatusBarWindowManager.add(mStatusBarWindow, getStatusBarHeight());
     }
 
