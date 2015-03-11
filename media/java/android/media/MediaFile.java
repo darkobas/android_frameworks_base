@@ -258,7 +258,6 @@ public class MediaFile {
         addFileType("QCP", FILE_TYPE_QCP, "audio/qcelp");
         addFileType("AC3", FILE_TYPE_AC3, "audio/ac3");
         addFileType("EC3", FILE_TYPE_EC3, "audio/eac3");
-        addFileType("FLV", FILE_TYPE_FLV, "video/x-flv");
         addFileType("APE", FILE_TYPE_APE, "audio/x-ape");
     }
 
