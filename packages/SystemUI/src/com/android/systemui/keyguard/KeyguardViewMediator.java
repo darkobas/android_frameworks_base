@@ -1065,7 +1065,11 @@ public class KeyguardViewMediator extends SystemUI {
                 }
             } else if (DISMISS_KEYGUARD_SECURELY_ACTION.equals(intent.getAction())) {
                 synchronized (KeyguardViewMediator.this) {
-                    dismiss();
+                    if (mScreenOn) {
+                        dismiss();
+                    } else {
+                        mDismissSecurelyOnScreenOn = true;
+                    }
                 }
             }
         }
