@@ -3554,12 +3554,6 @@ public final class Settings {
         public static final String HEADS_UP_NOTIFCATION_DECAY = "heads_up_notification_decay";
 
         /**
-         * Add global SystemUI flags (e.g. for immersive mode)
-         * @hide
-         */
-        public static final String SYSTEM_UI_FLAGS = "system_ui_flags";
-
-        /**
          * Color temperature of the display during the day
          * @hide
          */

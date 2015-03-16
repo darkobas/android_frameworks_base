@@ -38,7 +38,6 @@ import com.android.systemui.qs.tiles.CellularTile;
 import com.android.systemui.qs.tiles.ColorInversionTile;
 import com.android.systemui.qs.tiles.FlashlightTile;
 import com.android.systemui.qs.tiles.HotspotTile;
-import com.android.systemui.qs.tiles.ImmersiveTile;
 import com.android.systemui.qs.tiles.IntentTile;
 import com.android.systemui.qs.tiles.LocationTile;
 import com.android.systemui.qs.tiles.LiveDisplayTile;
@@ -274,7 +273,6 @@ public class QSTileHost implements QSTile.Host {
         else if (tileSpec.equals("hotspot")) return new HotspotTile(this);
         else if (tileSpec.equals("notifications")) return new NotificationsTile(this);
         else if (tileSpec.equals("usb_tether")) return new UsbTetherTile(this);
-        else if (tileSpec.equals("immersive")) return new ImmersiveTile(this);
         else if (tileSpec.equals("visualizer")) return new VisualizerTile(this);
         else if (tileSpec.equals("livedisplay")) return new LiveDisplayTile(this);
         else if (tileSpec.startsWith(IntentTile.PREFIX)) return IntentTile.create(this,tileSpec);
