@@ -17,6 +17,7 @@
 package com.android.internal.util.cm;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
@@ -48,5 +49,10 @@ public class QSUtils {
         ConnectivityManager cm = (ConnectivityManager) ctx.getSystemService(
                 Context.CONNECTIVITY_SERVICE);
         return cm.isNetworkSupported(ConnectivityManager.TYPE_MOBILE);
+    }
+
+    public static boolean deviceSupportsNfc(Context context) {
+        PackageManager packageManager = context.getPackageManager();
+        return packageManager.hasSystemFeature(PackageManager.FEATURE_NFC);
     }
 }
